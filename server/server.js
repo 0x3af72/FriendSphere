@@ -3,8 +3,11 @@ require('dotenv').config()
 const auth = require('./routes/auth')
 
 const express = require('express')
+const cookieParser = require('cookie-parser')
+
 const app = express()
 app.use(express.json())
+app.use(cookieParser());
 
 app.get("/api", auth.authenticate, (req, res) => {
     res.json({"users": ["user1", "user2", "user3"]})

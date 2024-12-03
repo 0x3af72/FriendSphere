@@ -29,15 +29,16 @@ async function register(req, res) {
     }
 
     // Create user
-    const success = await db.createUser(req.body?.username, req.body?.email, req.body?.password)
+    let success = await db.createUser(req.body?.username, req.body?.email, req.body?.password)
+    success = success && await db.createProfile(req.body?.username)
     if (success) {
 
-        // Generate JWt token
-        const token = jwt.sign({ username: req.user.username }, process.env.JWT_SECRET)
+        // Generate JWT token
+        const token = jwt.sign({ username: req.body?.username }, process.env.JWT_SECRET)
         return res.status(200).json({ token })
         
     } else {
-        return res.status(500).json({ error: "Something went wrong" })
+        return res.status(500).json({ error: "User already exists" })
     }
 }
 
@@ -48,7 +49,7 @@ async function login(req, res) {
 
     // Generate JWT token
     if (success) {
-        const token = jwt.sign({ username: req.user.username }, process.env.JWT_SECRET)
+        const token = jwt.sign({ username: req.body?.username }, process.env.JWT_SECRET)
         return res.status(200).json({ token })
     }
 
