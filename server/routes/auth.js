@@ -69,9 +69,7 @@ async function login(req, res) {
   if (success) {
     const token = jwt.sign({ username: req.body?.username }, process.env.JWT_SECRET)
     return res.status(200).json({ token })
-  }
-
-  else {
+  } else {
     return res.status(400).json({ error: "Invalid credentials" })
   }
 }

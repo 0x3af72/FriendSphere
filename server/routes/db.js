@@ -57,7 +57,7 @@ async function verifyUser(username, password) {
   try {
 
     // Get existing user
-    const user = await getExistingUser(username)
+    const user = await getExistingUser({ username })
     if (!user) return false
 
     // Verify password

@@ -4,13 +4,22 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
 const crypto = require('crypto')
+const multer = require('multer')
 
 const auth = require('./routes/auth')
 const profile = require('./routes/profile')
 
+// Setup app
 const app = express()
 app.use(express.json())
 app.use(cookieParser());
+
+// Set up multer
+const storage = multer.memoryStorage()
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+})
 
 // Middleware to add nonce
 app.use((req, res, next) => {
@@ -45,8 +54,8 @@ app.post("/api/register", auth.register)
 app.post("/api/login", auth.login)
 
 // Profile routes
-app.post("/api/:username/profile/pfp", auth.authenticate, profile.updatePfp)
-app.post("/api/:username/profile/html", auth.authenticate, profile.updateHTML)
-app.post("/api/:username/profile/css", auth.authenticate, profile.updateCSS)
+app.post("/api/profile/pfp", auth.authenticate, upload.single("pfp"), profile.updatePfp)
+app.post("/api/profile/html", auth.authenticate, profile.updateHTML)
+app.post("/api/profile/css", auth.authenticate, profile.updateCSS)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })
