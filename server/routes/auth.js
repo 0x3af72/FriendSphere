@@ -4,6 +4,11 @@ const db = require('./db')
 
 async function register(req, res) {
 
+  // Check if required fields are present
+  if (!req.body?.username || !req.body?.email || !req.body?.password) {
+    return res.status(400).json({ error: "Missing required fields" })
+  }
+
   // Check username length and validity
   usernameRegex = /^[a-z0-9]+$/i
   if (!usernameRegex.test(req.body?.username)) {
@@ -51,6 +56,11 @@ async function register(req, res) {
 }
 
 async function login(req, res) {
+
+  // Check if required fields are present
+  if (!req.body?.username || !req.body?.password) {
+    return res.status(400).json({ error: "Missing required fields" })
+  }
 
   // Verify user
   const success = await db.verifyUser(req.body?.username, req.body?.password)
