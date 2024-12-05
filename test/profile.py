@@ -10,6 +10,21 @@ cookies = {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJpYXQiOjE3MzMzMDE3Mzl9.kGcH4Kw6_AAbPPMsBTeg7CB2BIIS8O6wsINY6rvwl5M"
 }
 
+def test_update_profile():
+
+    url = "http://localhost:5000/api/profile"
+
+    # Expected: Successful profile update
+    printc("Testing: Successful profile update", Fore.YELLOW)
+
+    r = requests.post(url, json={"bio": "this bio is updated", "hobbies": ["cooking", "reading"], "music": ["paramore", "avril lavigne"]}, cookies=cookies)
+    res = r.json()
+    print(res)
+    if "success" in res:
+        printc("SUCCESS", Fore.GREEN)
+    else:
+        printc("FAILED", Fore.RED)
+
 def test_upload_pfp():
 
     url = "http://localhost:5000/api/profile/pfp"
@@ -70,6 +85,31 @@ def test_upload_css():
     res = r.json()
     print(res)
     if "success" in res:
+        printc("SUCCESS", Fore.GREEN)
+    else:
+        printc("FAILED", Fore.RED)
+
+def test_get_profile():
+
+    url = "http://localhost:5000/api/user/profile"
+
+    # Expected: Successful profile get
+    printc("Testing: Successful profile get", Fore.YELLOW)
+
+    r = requests.get(url, cookies=cookies)
+    print(r.content)
+    if b"error" in r.content:
+        printc("FAILED", Fore.RED)
+    else:
+        printc("SUCCESS", Fore.GREEN)
+
+    # Expected: Unsuccessful profile get
+    printc("Testing: Unsuccessful profile get", Fore.YELLOW)
+
+    url = "http://localhost:5000/api/doesnotexist/profile"
+    r = requests.get(url, cookies=cookies)
+    
+    if b"error" in r.content:
         printc("SUCCESS", Fore.GREEN)
     else:
         printc("FAILED", Fore.RED)
@@ -149,9 +189,11 @@ def test_get_css():
     else:
         printc("FAILED", Fore.RED)
 
+test_update_profile()
 test_upload_pfp()
 test_upload_html()
 test_upload_css()
+test_get_profile()
 test_get_pfp()
 test_get_html()
 test_get_css()
