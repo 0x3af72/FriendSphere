@@ -36,7 +36,7 @@ async function register(req, res) {
   // Check if user already exists
   const username = req.body?.username
   const email = req.body?.email
-  const userExists = await db.getExistingUser({ username, email })
+  const userExists = await db.getUser({ username, email })
   if (userExists) {
     return res.status(200).json({ error: "Username or email already taken" })
   }

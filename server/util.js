@@ -1,0 +1,25 @@
+const DOMPurify = require('dompurify')
+const { JSDOM } = require('jsdom')
+
+const db = require('./routes/db')
+
+// Within a request context, check if requested user exists
+async function reqUserExists(req, res, next) {
+  username = req.params?.username
+  if (!await db.getUser({ username })) {
+    return res.status(404).json({ error: "User does not exist" })
+  }
+  next()
+}
+
+// Sanitize HTML
+function sanitizeHTML(html) {
+  const window = new JSDOM("").window;
+  const purify = DOMPurify(window);
+  return purify.sanitize(html)
+}
+
+module.exports = {
+  reqUserExists,
+  sanitizeHTML,
+}

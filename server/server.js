@@ -8,6 +8,9 @@ const multer = require('multer')
 
 const auth = require('./routes/auth')
 const profile = require('./routes/profile')
+const thought = require('./routes/thought')
+const forum = require('./routes/forum')
+const util = require('./util')
 
 // Setup app
 const app = express()
@@ -54,11 +57,23 @@ app.post("/api/register", auth.register)
 app.post("/api/login", auth.login)
 
 // Profile routes
-app.get("/api/:username/profile/pfp", auth.authenticate,  profile.getPfp)
-app.get("/api/:username/profile/html", auth.authenticate,  profile.getHTML)
-app.get("/api/:username/profile/css", auth.authenticate,  profile.getCSS)
+app.get("/api/:username/profile", auth.authenticate, util.reqUserExists, profile.getProfile)
+app.get("/api/:username/profile/pfp", auth.authenticate, util.reqUserExists, profile.getPfp)
+app.get("/api/:username/profile/html", auth.authenticate, util.reqUserExists, profile.getHTML)
+app.get("/api/:username/profile/css", auth.authenticate, util.reqUserExists, profile.getCSS)
+app.post("/api/profile", auth.authenticate, profile.updateProfile)
 app.post("/api/profile/pfp", auth.authenticate, upload.single("pfp"), profile.updatePfp)
 app.post("/api/profile/html", auth.authenticate, profile.updateHTML)
 app.post("/api/profile/css", auth.authenticate, profile.updateCSS)
+
+// Thought routes
+app.get("/api/:username/thought", auth.authenticate, util.reqUserExists, thought.getThoughts)
+app.get("/api/:username/thought/:thoughtID", auth.authenticate, util.reqUserExists, thought.getThoughtByID)
+app.post("/api/thought/create", auth.authenticate, thought.createThought)
+app.post("/api/thought/update", auth.authenticate, thought.updateThought)
+app.post("/api/thought/delete", auth.authenticate, thought.deleteThought)
+
+// Forum routes
+// TODO
 
 app.listen(5000, () => { console.log("Server started on port 5000") })
