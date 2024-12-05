@@ -46,10 +46,112 @@ def test_upload_pfp():
 
 def test_upload_html():
 
-    pass
+    url = "http://localhost:5000/api/profile/html"
+
+    # Expected: Successful HTML upload
+    printc("Testing: Successful HTML upload", Fore.YELLOW)
+
+    r = requests.post(url, json={"html": "<h1>hello world</h1>"}, cookies=cookies)
+    res = r.json()
+    print(res)
+    if "success" in res:
+        printc("SUCCESS", Fore.GREEN)
+    else:
+        printc("FAILED", Fore.RED)
 
 def test_upload_css():
 
-    pass
+    url = "http://localhost:5000/api/profile/css"
+
+    # Expected: Successful CSS upload
+    printc("Testing: Successful CSS upload", Fore.YELLOW)
+
+    r = requests.post(url, json={"css": "h1{color: red;}"}, cookies=cookies)
+    res = r.json()
+    print(res)
+    if "success" in res:
+        printc("SUCCESS", Fore.GREEN)
+    else:
+        printc("FAILED", Fore.RED)
+
+def test_get_pfp():
+
+    url = "http://localhost:5000/api/user/profile/pfp"
+
+    # Expected: Successful pfp get
+    printc("Testing: Successful pfp get", Fore.YELLOW)
+
+    r = requests.get(url, cookies=cookies)
+
+    if b"error" in r.content:
+        printc("FAILED", Fore.RED)
+    else:
+        printc("SUCCESS", Fore.GREEN)
+
+    # Expected: Unsuccessful pfp get
+    printc("Testing: Unsuccessful pfp get", Fore.YELLOW)
+
+    url = "http://localhost:5000/api/doesnotexist/profile/pfp"
+    r = requests.get(url, cookies=cookies)
+
+    if b"error" in r.content:
+        printc("SUCCESS", Fore.GREEN)
+    else:
+        printc("FAILED", Fore.RED)
+
+def test_get_html():
+
+    url = "http://localhost:5000/api/user/profile/html"
+
+    # Expected: Successful HTML get
+    printc("Testing: Successful HTML get", Fore.YELLOW)
+
+    r = requests.get(url, cookies=cookies)
+
+    if b"error" in r.content:
+        printc("FAILED", Fore.RED)
+    else:
+        printc("SUCCESS", Fore.GREEN)
+
+    # Expected: Unsuccessful HTML get
+    printc("Testing: Unsuccessful HTML get", Fore.YELLOW)
+
+    url = "http://localhost:5000/api/doesnotexist/profile/html"
+    r = requests.get(url, cookies=cookies)
+    
+    if b"error" in r.content:
+        printc("SUCCESS", Fore.GREEN)
+    else:
+        printc("FAILED", Fore.RED)
+
+def test_get_css():
+
+    url = "http://localhost:5000/api/user/profile/css"
+
+    # Expected: Successful CSS get
+    printc("Testing: Successful CSS get", Fore.YELLOW)
+
+    r = requests.get(url, cookies=cookies)
+
+    if b"error" in r.content:
+        printc("FAILED", Fore.RED)
+    else:
+        printc("SUCCESS", Fore.GREEN)
+
+    # Expected: Unsuccessful CSS get
+    printc("Testing: Unsuccessful CSS get", Fore.YELLOW)
+
+    url = "http://localhost:5000/api/doesnotexist/profile/css"
+    r = requests.get(url, cookies=cookies)
+    
+    if b"error" in r.content:
+        printc("SUCCESS", Fore.GREEN)
+    else:
+        printc("FAILED", Fore.RED)
 
 test_upload_pfp()
+test_upload_html()
+test_upload_css()
+test_get_pfp()
+test_get_html()
+test_get_css()
