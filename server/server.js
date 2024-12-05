@@ -54,6 +54,9 @@ app.post("/api/register", auth.register)
 app.post("/api/login", auth.login)
 
 // Profile routes
+app.get("/api/:username/profile/pfp", auth.authenticate,  profile.getPfp)
+app.get("/api/:username/profile/html", auth.authenticate,  profile.getHTML)
+app.get("/api/:username/profile/css", auth.authenticate,  profile.getCSS)
 app.post("/api/profile/pfp", auth.authenticate, upload.single("pfp"), profile.updatePfp)
 app.post("/api/profile/html", auth.authenticate, profile.updateHTML)
 app.post("/api/profile/css", auth.authenticate, profile.updateCSS)
