@@ -70,8 +70,8 @@ app.post("/api/profile/css", auth.authenticate, profile.updateCSS)
 app.get("/api/:username/thought", auth.authenticate, util.reqUserExists, thought.getThoughts)
 app.get("/api/:username/thought/:thoughtID", auth.authenticate, util.reqUserExists, thought.getThoughtByID)
 app.post("/api/thought/create", auth.authenticate, thought.createThought)
-app.post("/api/thought/update", auth.authenticate, thought.updateThought)
-app.post("/api/thought/delete", auth.authenticate, thought.deleteThought)
+app.post("/api/thought/update/:thoughtID", auth.authenticate, thought.updateThought)
+app.post("/api/thought/delete/:thoughtID", auth.authenticate, thought.deleteThought)
 
 // Forum routes
 // TODO

@@ -149,11 +149,17 @@ const thoughtSchema = new mongoose.Schema({
 })
 const Thought = mongoose.model("Thought", thoughtSchema)
 
-// Get thoughts by username or id
-async function getThought({ username, id }) {
-  return await User.findOne({
+// Get thought by username or id
+async function getThought({ username, id, and }) {
+  if (and) return await User.findOne({ username: username, id: id })
+  return await Thought.findOne({
     $or: [{ username: username }, { id: id }],
   })
+}
+
+// Get thoughts by username
+async function getThoughts(username) {
+  return await Thought.find({ username: username })
 }
 
 // Create thought
@@ -187,6 +193,21 @@ async function createThought(username, title, html, css) {
   }
 }
 
+// Update profile
+async function updateProfile(username, title, html, css) {
+  try {
+    const thought = await getThoughtByID(username)
+    profile.bio = bio
+    profile.hobbies = hobbies
+    profile.music = music
+    await profile.save()
+    return true
+  } catch (error) {
+    console.error("Error updating profile:", error)
+    return false
+  }
+}
+
 // ======================================================
 
 module.exports = {
@@ -197,5 +218,6 @@ module.exports = {
   createProfile,
   updateProfile,
   getThought,
+  getThoughts,
   createThought,
 }

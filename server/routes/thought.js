@@ -2,11 +2,20 @@ const db = require('./db')
 const util = require('../util')
 
 async function getThoughts(req, res) {
-
+  const thoughts = await db.getThoughts(req.params?.username)
+  const thoughtsJson = thoughts.map(thought => ({
+    id: thought.id,
+    title: thought.title,
+  }))
+  return res.status(200).json(thoughtsJson)
 }
 
 async function getThoughtByID(req, res) {
-  
+  const thought = await db.getThought(req.params?.username, req.params?.thoughtID)
+  if (!thought) {
+    return res.status(404).json({ error: "Thought not found" })
+  }
+  return res.status(200).json({ id: thought.id, title: thought.title })
 }
 
 async function createThought(req, res) {
@@ -37,11 +46,16 @@ async function createThought(req, res) {
 }
 
 async function updateThought(req, res) {
-  
+  // can we refactor the code from createThought (DRY)
 }
 
 async function deleteThought(req, res) {
-  
+  const thought = await db.getThought(req.params?.username, req.params?.thoughtID)
+  if (!thought) {
+    return res.status(404).json({ error: "Thought not found" })
+  }
+  await thought.deleteOne()
+  return res.status(200).json({ success: "Thought deleted" })
 }
 
 module.exports = {
