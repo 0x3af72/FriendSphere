@@ -18,8 +18,9 @@ async function getThoughtByID(req, res) {
   return res.status(200).json({ id: thought.id, title: thought.title })
 }
 
-async function createThought(req, res) {
-  
+
+function validateThoughtFields(req, res) {
+
   // Check for required fields
   if (!req.body?.title || !req.body?.html || !req.body?.css) {
     return res.status(400).json({ error: "Missing required fields" })
@@ -32,6 +33,13 @@ async function createThought(req, res) {
   if (!(1 <= req.body?.html?.length)) {
     return res.status(400).json({ error: "HTML must be longer than 1 character" })
   }
+}
+
+async function createThought(req, res) {
+
+  // Field validation
+  const validateRes = validateThoughtFields(req, res)
+  if (validateRes) return validateRes
 
   // Sanitize HTML
   const html = util.sanitizeHTML(req.body?.html)
@@ -46,7 +54,17 @@ async function createThought(req, res) {
 }
 
 async function updateThought(req, res) {
-  // can we refactor the code from createThought (DRY)
+
+  // Field validation
+  const validateRes = validateThoughtFields(req, res)
+  if (validateRes) return validateRes
+
+  // Sanitize HTML
+  const html = util.sanitizeHTML(req.body?.html)
+
+  // Update thought
+  
+
 }
 
 async function deleteThought(req, res) {
