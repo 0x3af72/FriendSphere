@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const fs = require('fs')
 const path = require('path')
-const crypto = require('crypto')
 const { v4: uuidv4 } = require('uuid');
 
 // Connect to MongoDB
@@ -23,6 +22,9 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, index: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  friends: { type: [String], required: true },
+  subscriptions: { type: [String], required: true },
+  settings: { type: Object, required: true },
 })
 const User = mongoose.model("User", userSchema)
 
@@ -47,6 +49,9 @@ async function createUser(username, email, password) {
         username: username,
         email: email,
         password: hashedPassword,
+        friends: [],
+        subscriptions: [],
+        settings: {},
     })
     await newUser.save()
     return true
@@ -141,17 +146,18 @@ async function updateProfile(username, bio, hobbies, music) {
 
 // ======================== THOUGHTS ========================
 
-// Thoughts collection
+// Thought collection
 const thoughtSchema = new mongoose.Schema({
   username: { type: String, required: true, index: true },
   id: { type: String, required: true, unique: true, index: true },
   title: { type: String, required: true },
+  friendsOnly: { type: Boolean, required: true },
 })
 const Thought = mongoose.model("Thought", thoughtSchema)
 
 // Get thought by username or id
 async function getThought({ username, id, and }) {
-  if (and) return await User.findOne({ username: username, id: id })
+  if (and) return await Thought.findOne({ username: username, id: id })
   return await Thought.findOne({
     $or: [{ username: username }, { id: id }],
   })
@@ -163,7 +169,7 @@ async function getThoughts(username) {
 }
 
 // Create thought
-async function createThought(username, title, html, css) {
+async function createThought(username, friendsOnly, title, html, css) {
   try {
 
     // Generate id for thought
@@ -183,6 +189,7 @@ async function createThought(username, title, html, css) {
       username: username,
       id: id,
       title: title,
+      friendsOnly,
     })
     await newThought.save()
     return id
@@ -193,20 +200,54 @@ async function createThought(username, title, html, css) {
   }
 }
 
-// Update profile
-async function updateProfile(username, title, html, css) {
+// Update thought
+async function updateThought(username, id, title, friendsOnly) {
   try {
-    const thought = await getThoughtByID(username)
-    profile.bio = bio
-    profile.hobbies = hobbies
-    profile.music = music
-    await profile.save()
+    const thought = await getThought({ username, id })
+    thought.title = title
+    thought.friendsOnly = friendsOnly
+    await thought.save()
     return true
   } catch (error) {
-    console.error("Error updating profile:", error)
+    console.error("Error updating thought:", error)
     return false
   }
 }
+
+// =========================== UPDATES ===========================
+
+// Update collection
+const updateSchema = new mongoose.Schema({
+  username: { type: String, required: true, index: true },
+  title: { type: String, required: true },
+  body: { type: String, required: true },
+  action: { type: String, required: false },
+  actionData: { type: Object, required: false },
+})
+const Update = mongoose.model("Update", updateSchema)
+
+// =========================== COMMENTS ===========================
+
+// Comment collection
+const commentSchema = new mongoose.Schema({
+  username: { type: String, required: true, index: true },
+  id: { type: String, required: true },
+  thoughtID: { type: String, required: false, index: true }, // Either
+  forumPostID: { type: String, required: false, index: true }, // Or
+  body: { type: String, required: true },
+  files: { type: [String], required: false },
+})
+const Comment = mongoose.model("Comment", commentSchema)
+
+// =========================== REPLIES ===========================
+
+// Reply collection
+const replySchema = new mongoose.Schema({
+  username: { type: String, required: true, index: true },
+  commentID: { type: String, required: true, index: true },
+  body: { type: String, required: true },
+})
+const Reply = mongoose.model("Reply", replySchema)
 
 // ======================================================
 
@@ -220,4 +261,5 @@ module.exports = {
   getThought,
   getThoughts,
   createThought,
+  updateThought,
 }

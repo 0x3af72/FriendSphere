@@ -57,6 +57,22 @@ def test_get_thought():
     else:
         printc("SUCCESS", Fore.GREEN)
 
+def test_update_thought():
+
+    url = "http://localhost:5000/api/thought/update/" + thoughtID
+
+    # Expected: Successful thought update
+    printc("Testing: Successful thought update", Fore.YELLOW)
+
+    r = requests.post(url, json={"title": "my very first thought", "html": "<h1>frayed ends of sanity hear them calling me</h1><img src=a onerror=alert(1)>", "css": "h1{color:blue}"}, cookies=cookies)
+    res = r.json()
+    print(res)
+    if "success" in res:
+        printc("SUCCESS", Fore.GREEN)
+    else:
+        printc("FAILED", Fore.RED)
+
 test_create_thought()
 test_get_thoughts()
 test_get_thought()
+test_update_thought()

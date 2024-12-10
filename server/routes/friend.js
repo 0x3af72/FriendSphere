@@ -1,0 +1,1 @@
+// Write updates in db.js, create API for it, then can begin on friend
