@@ -214,17 +214,79 @@ async function updateThought(username, id, title, friendsOnly) {
   }
 }
 
+// Delete thought
+async function deleteThought(username, id) {
+  try {
+    const thought = await getThought({ username, id })
+    await thought.deleteOne()
+    return true
+  } catch (error) {
+    console.error("Error deleting thought:", error)
+    return false
+  }
+}
+
 // =========================== UPDATES ===========================
 
 // Update collection
 const updateSchema = new mongoose.Schema({
   username: { type: String, required: true, index: true },
+  id: { type: String, required: true, index: true },
   title: { type: String, required: true },
   body: { type: String, required: true },
   action: { type: String, required: false },
   actionData: { type: Object, required: false },
 })
 const Update = mongoose.model("Update", updateSchema)
+
+// Get update by username and id
+async function getUpdate(username, id) {
+  return await Update.findOne({ username: username, id: id })
+}
+
+// Get updates by user
+async function getUpdates(username) {
+  return await Update.find({ username })
+}
+
+// Create update
+async function createUpdate(username, title, body, action=undefined, actionData=undefined) {
+  try {
+
+    // Generate id for update
+    let id;
+    while (await getUpdate(username, id) || !id) {
+      id = uuidv4();
+    }
+
+    const newUpdate = new Update({
+      username,
+      id,
+      title,
+      body,
+      action,
+      actionData,
+    })
+    await newUpdate.save()
+    return true
+
+  } catch (error) {
+    console.log("Error creating update:", error)
+    return false
+  }
+}
+
+// Delete update
+async function deleteUpdate(username, id) {
+  try {
+    const update = await getUpdate(username, id)
+    await update.deleteOne()
+    return true
+  } catch (error) {
+    console.error("Error deleting update:", error)
+    return false
+  }
+}
 
 // =========================== COMMENTS ===========================
 
@@ -262,4 +324,9 @@ module.exports = {
   getThoughts,
   createThought,
   updateThought,
+  deleteThought,
+  getUpdate,
+  getUpdates,
+  createUpdate,
+  deleteUpdate,
 }

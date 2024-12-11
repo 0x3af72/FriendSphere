@@ -29,7 +29,7 @@ def test_create_thought():
 
 def test_get_thoughts():
 
-    url = "http://localhost:5000/api/user/thought"
+    url = "http://localhost:5000/api/thought/user"
 
     # Expected: Successful thoughts get
     printc("Testing: Successful thoughts get", Fore.YELLOW)
@@ -44,7 +44,7 @@ def test_get_thoughts():
 
 def test_get_thought():
 
-    url = "http://localhost:5000/api/user/thought/" + thoughtID
+    url = "http://localhost:5000/api/thought/user" + thoughtID
 
     # Expected: Successful thought get
     printc("Testing: Successful thought get", Fore.YELLOW)

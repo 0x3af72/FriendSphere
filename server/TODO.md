@@ -1,6 +1,6 @@
 # TODO
 
-1. Write logic for Update, in db.js
+1. Write logic for Update, in db.js [ok]
 
 2. Write API for Update, in update.js
 

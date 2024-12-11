@@ -91,7 +91,7 @@ def test_upload_css():
 
 def test_get_profile():
 
-    url = "http://localhost:5000/api/user/profile"
+    url = "http://localhost:5000/api/profile/user"
 
     # Expected: Successful profile get
     printc("Testing: Successful profile get", Fore.YELLOW)
@@ -106,7 +106,7 @@ def test_get_profile():
     # Expected: Unsuccessful profile get
     printc("Testing: Unsuccessful profile get", Fore.YELLOW)
 
-    url = "http://localhost:5000/api/doesnotexist/profile"
+    url = "http://localhost:5000/api/profile/doesnotexist"
     r = requests.get(url, cookies=cookies)
     
     if b"error" in r.content:
@@ -116,7 +116,7 @@ def test_get_profile():
 
 def test_get_pfp():
 
-    url = "http://localhost:5000/api/user/profile/pfp"
+    url = "http://localhost:5000/api/profile/user/pfp"
 
     # Expected: Successful pfp get
     printc("Testing: Successful pfp get", Fore.YELLOW)
@@ -131,7 +131,7 @@ def test_get_pfp():
     # Expected: Unsuccessful pfp get
     printc("Testing: Unsuccessful pfp get", Fore.YELLOW)
 
-    url = "http://localhost:5000/api/doesnotexist/profile/pfp"
+    url = "http://localhost:5000/api/profile/doesnotexist/pfp"
     r = requests.get(url, cookies=cookies)
 
     if b"error" in r.content:
@@ -141,7 +141,7 @@ def test_get_pfp():
 
 def test_get_html():
 
-    url = "http://localhost:5000/api/user/profile/html"
+    url = "http://localhost:5000/api/profile/user/html"
 
     # Expected: Successful HTML get
     printc("Testing: Successful HTML get", Fore.YELLOW)
@@ -156,7 +156,7 @@ def test_get_html():
     # Expected: Unsuccessful HTML get
     printc("Testing: Unsuccessful HTML get", Fore.YELLOW)
 
-    url = "http://localhost:5000/api/doesnotexist/profile/html"
+    url = "http://localhost:5000/api/profile/doesnotexist/html"
     r = requests.get(url, cookies=cookies)
     
     if b"error" in r.content:
@@ -166,7 +166,7 @@ def test_get_html():
 
 def test_get_css():
 
-    url = "http://localhost:5000/api/user/profile/css"
+    url = "http://localhost:5000/api/profile/user/css"
 
     # Expected: Successful CSS get
     printc("Testing: Successful CSS get", Fore.YELLOW)
@@ -181,7 +181,7 @@ def test_get_css():
     # Expected: Unsuccessful CSS get
     printc("Testing: Unsuccessful CSS get", Fore.YELLOW)
 
-    url = "http://localhost:5000/api/doesnotexist/profile/css"
+    url = "http://localhost:5000/api/profile/doesnotexist/css"
     r = requests.get(url, cookies=cookies)
     
     if b"error" in r.content:

@@ -103,12 +103,11 @@ async function updateThought(req, res) {
 }
 
 async function deleteThought(req, res) {
-  const thought = await db.getThought(req.params?.username, req.params?.thoughtID)
-  if (!thought) {
+  if (!(await db.deleteThought(req.params?.username, req.params?.thoughtID))) {
     return res.status(404).json({ error: "Thought not found" })
+  } else {
+    return res.status(200).json({ success: "Thought deleted" })
   }
-  await thought.deleteOne()
-  return res.status(200).json({ success: "Thought deleted" })
 }
 
 module.exports = {
