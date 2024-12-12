@@ -79,13 +79,12 @@ app.post("/api/thought/delete/:thoughtID", auth.authenticate, thought.deleteThou
 // TODO
 
 // Friend routes
-app.get("/api/friend/list/:username", auth.authenticate, util.reqUserExists, friend.listFriends)
+app.get("/api/friend/list/:username", auth.authenticate, util.reqUserExists, friend.getFriends)
 app.post("/api/friend/add/:username", auth.authenticate, util.reqUserExists, friend.addFriend)
 app.post("/api/friend/decline/:username", auth.authenticate, util.reqUserExists, friend.declineFriend)
 
 // Update routes
-app.get("/api/update/list", auth.authenticate, update.listUpdates)
-app.get("/api/update/act/:updateID", auth.authenticate, update.actUpdate)
-app.post("/api/update/delete/:updateID", auth.authenticate, update.deleteUpdate)
+app.get("/api/update/list", auth.authenticate, update.getUpdates)
+app.get("/api/update/:updateID", auth.authenticate, update.getUpdateByID)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })

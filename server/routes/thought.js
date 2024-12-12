@@ -31,6 +31,8 @@ async function getThoughtByID(req, res) {
     return res.status(404).json({ error: "Thought not found" })
   }
 
+  // TODO: return the html and css
+
   return res.status(200).json({ id: thought.id, title: thought.title })
 }
 

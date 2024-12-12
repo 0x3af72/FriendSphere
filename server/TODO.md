@@ -2,7 +2,7 @@
 
 1. Write logic for Update, in db.js [ok]
 
-2. Write API for Update, in update.js
+2. Write API for Update, in update.js [ok]
 
 3. Write API friend.js, this requires Update to be written (how else would users know who's adding them)
 
