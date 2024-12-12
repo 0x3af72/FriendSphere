@@ -22,9 +22,9 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, index: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  friends: { type: [String], required: true },
-  subscriptions: { type: [String], required: true },
-  settings: { type: Object, required: true },
+  friends: { type: [String], required: true, default: [] },
+  subscriptions: { type: [String], required: true, default: [] },
+  settings: { type: Object, required: true, default: {} },
 })
 const User = mongoose.model("User", userSchema)
 
@@ -49,9 +49,6 @@ async function createUser(username, email, password) {
         username: username,
         email: email,
         password: hashedPassword,
-        friends: [],
-        subscriptions: [],
-        settings: {},
     })
     await newUser.save()
     return true
@@ -87,9 +84,9 @@ async function verifyUser(username, password) {
 // Profile collection
 const profileSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, index: true },
-  bio: { type: String, required: true},
-  hobbies: { type: [String], required: true},
-  music: { type: [String], required: true},
+  bio: { type: String, required: true, default: "" },
+  hobbies: { type: [String], required: true, default: [] },
+  music: { type: [String], required: true, default: [] },
 })
 const Profile = mongoose.model("Profile", profileSchema)
 
@@ -114,12 +111,7 @@ async function createProfile(username) {
     await fs.promises.copyFile("templates/profile/style.css", path.join(profileData, "style.css"))
 
     // Create the user
-    const newProfile = new Profile({
-        username: username,
-        bio: "",
-        hobbies: [],
-        music: [],
-    })
+    const newProfile = new Profile({ username: username, })
     await newProfile.save()
     return true
 
@@ -236,6 +228,7 @@ const updateSchema = new mongoose.Schema({
   body: { type: String, required: true },
   action: { type: String, required: false },
   actionData: { type: Object, required: false },
+  createdAt: { type: Date, required: true, default: Date.now },
 })
 const Update = mongoose.model("Update", updateSchema)
 

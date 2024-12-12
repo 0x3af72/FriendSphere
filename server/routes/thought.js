@@ -31,9 +31,18 @@ async function getThoughtByID(req, res) {
     return res.status(404).json({ error: "Thought not found" })
   }
 
-  // TODO: return the html and css
+  // Read HTML and CSS
+  let html, css
+  try {
+    const thoughtData = path.join("data", req.params?.username, "thought", id)
+    html = await fs.promises.readFile(path.join(thoughtData, "index.html"))
+    css = await fs.promises.readFile(path.join(thoughtData, "style.css"))
+  } catch (error) {
+    console.error("Error while reading thought files:", error)
+    return res.status(500).json({ error: "An error occurred while reading thought files" })
+  }
 
-  return res.status(200).json({ id: thought.id, title: thought.title })
+  return res.status(200).json({ id: thought.id, title: thought.title, html: html, css: css })
 }
 
 function validateThoughtFields(req, res) {
