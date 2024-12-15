@@ -12,6 +12,14 @@ async function reqUserExists(req, res, next) {
   next()
 }
 
+// Ensure requested user is not yourself
+function reqUserNotSelf(req, res, next) {
+  if (req.username == req.params?.username) {
+    return res.status(401).json({ error: "You cannot perform this action on yourself!" })
+  }
+  next()
+}
+
 // Sanitize HTML
 function sanitizeHTML(html) {
   const window = new JSDOM("").window;
@@ -21,5 +29,6 @@ function sanitizeHTML(html) {
 
 module.exports = {
   reqUserExists,
+  reqUserNotSelf,
   sanitizeHTML,
 }

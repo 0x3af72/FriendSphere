@@ -17,7 +17,12 @@ def test_create_thought():
     # Expected: Successful thought create
     printc("Testing: Successful thought create", Fore.YELLOW)
 
-    r = requests.post(url, json={"title": "my very first thought", "html": "<h1>a person who thinks all the time has nothing to think but thoughts</h1><img src=a onerror=alert(1)>", "css": "h1{color:blue}"}, cookies=cookies)
+    r = requests.post(url, json={
+        "title": "my very first thought",
+        "html": "<h1>a person who thinks all the time has nothing to think but thoughts</h1><img src=a onerror=alert(1)>",
+        "css": "h1{color:blue}",
+        "friendsOnly": True,
+        }, cookies=cookies)
     res = r.json()
     print(res)
     global thoughtID
@@ -44,7 +49,7 @@ def test_get_thoughts():
 
 def test_get_thought():
 
-    url = "http://localhost:5000/api/thought/user" + thoughtID
+    url = "http://localhost:5000/api/thought/user/" + thoughtID
 
     # Expected: Successful thought get
     printc("Testing: Successful thought get", Fore.YELLOW)
@@ -64,7 +69,12 @@ def test_update_thought():
     # Expected: Successful thought update
     printc("Testing: Successful thought update", Fore.YELLOW)
 
-    r = requests.post(url, json={"title": "my very first thought", "html": "<h1>frayed ends of sanity hear them calling me</h1><img src=a onerror=alert(1)>", "css": "h1{color:blue}"}, cookies=cookies)
+    r = requests.post(url, json={
+      "title": "my very first thought",
+      "html": "<h1>a person who thinks all the time has nothing to think but thoughts</h1><img src=a onerror=alert(1)>",
+      "css": "h1{color:blue}",
+      "friendsOnly": True,
+      }, cookies=cookies)
     res = r.json()
     print(res)
     if "success" in res:

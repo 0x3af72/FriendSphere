@@ -6,7 +6,7 @@ init()
 def printc(text, color):
     print(f"{color}{text}{Fore.RESET}")
 
-def test_register():
+def test_register(username="user"):
 
     url = "http://localhost:5000/api/register"
 
@@ -14,8 +14,8 @@ def test_register():
     printc("Testing: Successful registration", Fore.YELLOW)
 
     data = {
-        "username": "user",
-        "email": "user@gmail.com",
+        "username": username,
+        "email": f"{username}@gmail.com",
         "password": "user12345",
     }
 
@@ -29,13 +29,6 @@ def test_register():
 
     # Expected: Unsuccessful registration (exists already)
     printc("Testing: Successful registration (exists already)", Fore.YELLOW)
-
-    data = {
-        "username": "user",
-        "email": "user@gmail.com",
-        "password": "user12345",
-    }
-
     r = requests.post(url, json=data)
     res = r.json()
     print(res)
@@ -81,4 +74,5 @@ def test_login():
         printc("SUCCESS", Fore.GREEN)
 
 test_register()
+test_register("user2")
 test_login()

@@ -5,11 +5,11 @@ const path = require('path')
 const db = require('./db')
 
 async function getProfile(req, res) {
-  const user = await db.getUser(req.params?.username)
+  const user = await db.getUser({ username: req.params?.username })
   const profile = await db.getProfile(req.params?.username)
   return res.status(200).json({
     bio: profile.bio, hobbies: profile.hobbies, music: profile.music,
-    friends: user.friends.length(), subscriptions: user.subscriptions
+    friends: user.friends.length, subscriptions: user.subscriptions
   })
 }
 

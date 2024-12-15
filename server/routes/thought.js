@@ -8,7 +8,7 @@ async function getThoughts(req, res) {
   const thoughts = await db.getThoughts(req.params?.username)
   const otherUser = await db.getUser({ username: req.params?.username })
   const thoughtsJson = thoughts
-    .filter(thought => !thought.friendsOnly || otherUser.friends.contains(req.username)) // friendsOnly check
+    .filter(thought => !thought.friendsOnly || otherUser.friends.includes(req.username)) // friendsOnly check
     .map(thought => ({
       id: thought.id,
       title: thought.title,
@@ -27,16 +27,16 @@ async function getThoughtByID(req, res) {
   }
 
   // Check if user passes friendsOnly check
-  if (thought.friendsOnly && !otherUser.friends.contains(req.username)) {
+  if (!(req.username == req.params?.username) && thought.friendsOnly && !otherUser.friends.includes(req.username)) {
     return res.status(404).json({ error: "Thought not found" })
   }
 
   // Read HTML and CSS
   let html, css
   try {
-    const thoughtData = path.join("data", req.params?.username, "thought", id)
-    html = await fs.promises.readFile(path.join(thoughtData, "index.html"))
-    css = await fs.promises.readFile(path.join(thoughtData, "style.css"))
+    const thoughtData = path.join("data", req.params?.username, "thought", req.params?.thoughtID)
+    html = (await fs.promises.readFile(path.join(thoughtData, "index.html"))).toString()
+    css = (await fs.promises.readFile(path.join(thoughtData, "style.css"))).toString()
   } catch (error) {
     console.error("Error while reading thought files:", error)
     return res.status(500).json({ error: "An error occurred while reading thought files" })
@@ -49,7 +49,7 @@ function validateThoughtFields(req, res) {
   try {
 
     // Check for required fields
-    if (!req.body?.title || !req.body?.html || !req.body?.css || !req.body?.friendsOnly) {
+    if (!req.body?.title || !req.body?.html || !req.body?.css) {
       return res.status(400).json({ error: "Missing required fields" })
     }
 
@@ -62,7 +62,7 @@ function validateThoughtFields(req, res) {
     }
 
     // Check if friendsOnly is a bool
-    if (!(req.body?.friendsOnly instanceof Boolean)) {
+    if (!(typeof req.body?.friendsOnly == "boolean")) {
       return res.status(400).json({ error: "friendsOnly must be a boolean" })
     }
 
@@ -81,7 +81,7 @@ async function createThought(req, res) {
   const html = util.sanitizeHTML(req.body?.html)
 
   // Create thought
-  const id = await db.createThought(req.username, req.body?.title, html, req.body?.css, req.body?.friendsOnly)
+  const id = await db.createThought(req.username, req.body?.friendsOnly, req.body?.title, html, req.body?.css)
   if (id) {
     return res.status(200).json({ id: id })
   } else {
