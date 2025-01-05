@@ -1,10 +1,31 @@
 const db = require('./db')
 
+// Within a request context, ensure requested user is a friend
+async function reqUserIsFriend(req, res, next) {
+  if (!req.reqUser.friends.includes(req.username)) {
+    return res.status(401).json({ error: "You are not this user's friend" })
+  }
+  next()
+}
+
+// Within a request context, ensure requested user is not a friend
+async function reqUserNotFriend(req, res, next) {
+  if (req.reqUser.friends.includes(req.username)) {
+    return res.status(401).json({ error: "You are already this user's friend" })
+  }
+  next()
+}
+
+// Within a request context, ensure requested user is a friend or themself
+async function reqUserIsFriendOrSelf(req, res, next) {
+  if (!(req.reqUser.username == req.username || req.reqUser.friends.includes(req.username))) {
+    return res.status(401).json({ error: "You are not this user's friend" })
+  }
+  next()
+}
+
 async function getFriends(req, res) {
   let otherUser = req.reqUser
-  if (req.username != req.reqUser.username && !otherUser.friends.includes(req.username)) {
-    return res.status(401).json({ error: "You are not this user's friend!" })
-  }
   return res.status(200).json(otherUser.friends)
 }
 
@@ -18,11 +39,6 @@ async function addFriend(req, res) {
   // Get user objects
   const user = await db.getUser({ username: req.username })
   let otherUser = req.reqUser
-
-  // Check if friends already
-  if (user.friends.includes(req.reqUser.username)) {
-    return res.status(401).json({ error: "You are already this user's friend" })
-  }
 
   // Check for incoming friend request
   const updates = await db.getUpdates(req.username)
@@ -78,13 +94,8 @@ async function declineFriend(req, res) {
 
 async function removeFriend(req, res) {
 
-  // Check if friends
-  const user = await db.getUser({ username: req.username })
-  if (!user.friends.includes(req.reqUser.username)) {
-    return res.status(401).json({ error: "You are not this user's friend!" })
-  }
-
   // Remove friend
+  const user = await db.getUser({ username: req.username })
   let otherUser = req.reqUser
   user.friends = user.friends.filter(friend => friend != req.reqUser.username)
   otherUser.friends = otherUser.friends.filter(friend => friend != req.username)
@@ -95,6 +106,9 @@ async function removeFriend(req, res) {
 }
 
 module.exports = {
+  reqUserIsFriend,
+  reqUserNotFriend,
+  reqUserIsFriendOrSelf,
   getFriends,
   addFriend,
   declineFriend,

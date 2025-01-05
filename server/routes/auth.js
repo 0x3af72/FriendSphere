@@ -2,6 +2,24 @@ const jwt = require('jsonwebtoken')
 
 const db = require('./db')
 
+function authenticate(req, res, next) {
+
+  // Get token
+  const token = req.cookies?.token
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized" })
+  }
+
+  // Verify token
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Unauthorized" })
+    }
+    req.username = decoded.username
+    next()
+  })
+}
+
 async function register(req, res) {
 
   // Check if required fields are present
@@ -74,26 +92,8 @@ async function login(req, res) {
   }
 }
 
-function authenticate(req, res, next) {
-
-  // Get token
-  const token = req.cookies?.token
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized" })
-  }
-
-  // Verify token
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ error: "Unauthorized" })
-    }
-    req.username = decoded.username
-    next()
-  })
-}
-
 module.exports = {
+  authenticate,
   register,
   login,
-  authenticate,
 }

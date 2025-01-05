@@ -80,10 +80,10 @@ app.post("/api/thought/delete/:thoughtID", auth.authenticate, thought.deleteThou
 // TODO
 
 // Friend routes
-app.get("/api/friend/list/:username", auth.authenticate, util.reqUserExists, friend.getFriends)
-app.post("/api/friend/add/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.addFriend)
+app.get("/api/friend/list/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.reqUserIsFriendOrSelf, friend.getFriends)
+app.post("/api/friend/add/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.reqUserNotFriend, friend.addFriend)
 app.post("/api/friend/decline/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.declineFriend)
-app.post("/api/friend/remove/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.removeFriend)
+app.post("/api/friend/remove/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.reqUserIsFriend, friend.removeFriend)
 
 // Update routes
 app.get("/api/update/list", auth.authenticate, update.getUpdates)
