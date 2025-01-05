@@ -5,9 +5,20 @@ const db = require('./routes/db')
 
 // Within a request context, check if requested user exists
 async function reqUserExists(req, res, next) {
-  username = req.params?.username
-  if (!await db.getUser({ username })) {
+  req.reqUser = await db.getUser({ username: req.params?.username })
+  if (!req.reqUser) {
     return res.status(404).json({ error: "User does not exist" })
+  }
+  next()
+}
+
+// Within a request context, check if requested thought or forum ID exists
+async function reqThoughtOrForumIDExists(req, res, next) {
+  req.reqThought = await db.getThought({ id: req.params?.thoughtOrForumID })
+  req.reqForumPost = null
+  // let forumPost = ...
+  if (!(req.reqThought || req.reqForumPost)) {
+    return res.status(404).json({ error: "Thought or forum ID does not exist" })
   }
   next()
 }
@@ -22,5 +33,6 @@ function reqUserNotSelf(req, res, next) {
 
 module.exports = {
   reqUserExists,
+  reqThoughtOrForumIDExists,
   reqUserNotSelf,
 }

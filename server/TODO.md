@@ -8,8 +8,10 @@
 
 3.5. DOMPurify on client side not server side [ok]
 
-4. TEST friend.js
+4. TEST friend.js [ok]
 
 5. Comments (these can be on forums, or on thoughts)
 
 6. Replies (these are on comments)
+
+7. Forum

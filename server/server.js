@@ -12,6 +12,7 @@ const thought = require('./routes/thought')
 const forum = require('./routes/forum')
 const update = require('./routes/update')
 const friend = require('./routes/friend')
+const comment = require('./routes/comment')
 const util = require('./util')
 
 // Setup app
@@ -87,5 +88,10 @@ app.post("/api/friend/remove/:username", auth.authenticate, util.reqUserExists, 
 // Update routes
 app.get("/api/update/list", auth.authenticate, update.getUpdates)
 app.get("/api/update/:updateID", auth.authenticate, update.getUpdateByID)
+
+// Comment routes
+app.get("/api/comment/list/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumIDExists, comment.getComments)
+app.post("/api/comment/add/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumIDExists, comment.addComment)
+app.post("/api/comment/remove/:commentID", auth.authenticate, comment.removeComment)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })
