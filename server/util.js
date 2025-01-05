@@ -20,15 +20,7 @@ function reqUserNotSelf(req, res, next) {
   next()
 }
 
-// Sanitize HTML
-function sanitizeHTML(html) {
-  const window = new JSDOM("").window;
-  const purify = DOMPurify(window);
-  return purify.sanitize(html)
-}
-
 module.exports = {
   reqUserExists,
   reqUserNotSelf,
-  sanitizeHTML,
 }

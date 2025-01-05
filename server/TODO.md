@@ -4,7 +4,9 @@
 
 2. Write API for Update, in update.js [ok]
 
-3. Write API friend.js, this requires Update to be written (how else would users know who's adding them)
+3. Write API friend.js, this requires Update to be written (how else would users know who's adding them) [ok]
+
+3.5. DOMPurify on client side not server side [ok]
 
 4. TEST friend.js
 

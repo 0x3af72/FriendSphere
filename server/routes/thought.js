@@ -77,11 +77,8 @@ async function createThought(req, res) {
   const validateRes = validateThoughtFields(req, res)
   if (validateRes) return validateRes
 
-  // Sanitize HTML
-  const html = util.sanitizeHTML(req.body?.html)
-
   // Create thought
-  const id = await db.createThought(req.username, req.body?.friendsOnly, req.body?.title, html, req.body?.css)
+  const id = await db.createThought(req.username, req.body?.friendsOnly, req.body?.title, req.body?.html, req.body?.css)
   if (id) {
     return res.status(200).json({ id: id })
   } else {
@@ -95,15 +92,12 @@ async function updateThought(req, res) {
   const validateRes = validateThoughtFields(req, res)
   if (validateRes) return validateRes
 
-  // Sanitize HTML
-  const html = util.sanitizeHTML(req.body?.html)
-
   // Update thought
   if (await db.updateThought(req.username, req.params?.thoughtID, req.body?.title, req.body?.friendsOnly)) {
 
     // Write HTML and CSS
     const thoughtData = path.join("data", req.username, "thought", req.params?.thoughtID)
-    await fs.promises.writeFile(path.join(thoughtData, "index.html"), html)
+    await fs.promises.writeFile(path.join(thoughtData, "index.html"), req.body?.html)
     await fs.promises.writeFile(path.join(thoughtData, "style.css"), req.body?.css)
 
     return res.status(200).json({ success: "Thought updated successfully" })
