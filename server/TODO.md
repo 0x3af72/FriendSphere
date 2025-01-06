@@ -14,4 +14,4 @@
 
 6. Replies (these are on comments)
 
-7. Forum
+7. Forum (these can attach files)

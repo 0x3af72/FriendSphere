@@ -286,13 +286,58 @@ async function deleteUpdate(username, id) {
 // Comment collection
 const commentSchema = new mongoose.Schema({
   username: { type: String, required: true, index: true },
-  id: { type: String, required: true },
+  id: { type: String, required: true, index: true },
   thoughtID: { type: String, required: false, index: true }, // Either
   forumPostID: { type: String, required: false, index: true }, // Or
   body: { type: String, required: true },
-  files: { type: [String], required: false },
 })
 const Comment = mongoose.model("Comment", commentSchema)
+
+async function getComment(id) {
+  return await Comment.findOne({ id })
+}
+
+async function getComments({ username, thoughtID, forumPostID }) {
+  return await Comment.find({
+    $or: [{ username: username }, { thoughtID: thoughtID }, { forumPostID: forumPostID }],
+  })
+}
+
+async function createComment(username, thoughtID, forumPostID, body) {
+  try {
+
+    // Generate id for comment
+    let id;
+    while (await getComment(id) || !id) {
+      id = uuidv4();
+    }
+
+    const newComment = new Comment({
+      username,
+      id,
+      thoughtID,
+      forumPostID,
+      body
+    })
+    await newComment.save()
+    return true
+
+  } catch (error) {
+    console.error("Error create comment:", error)
+    return false
+  }
+}
+
+async function deleteComment(id) {
+  try {
+    const comment = await getComment(id)
+    await comment.deleteOne()
+    return true
+  } catch (error) {
+    console.error("Error deleting comment:", error)
+    return false
+  }
+}
 
 // =========================== REPLIES ===========================
 
@@ -322,4 +367,8 @@ module.exports = {
   getUpdates,
   createUpdate,
   deleteUpdate,
+  getComment,
+  getComments,
+  createComment,
+  deleteComment,
 }

@@ -4,6 +4,13 @@ const fs = require('fs')
 const db = require('./db')
 const util = require('../util')
 
+async function reqThoughtIsBySelf(req, res, next) {
+  if (req.reqThought.username != req.username) {
+    return res.status(401).json({ error: "You are not authorized to perform this action" })
+  }
+  next()
+}
+
 async function getThoughts(req, res) {
   const thoughts = await db.getThoughts(req.params?.username)
   const otherUser = await db.getUser({ username: req.params?.username })
@@ -20,11 +27,6 @@ async function getThoughtByID(req, res) {
 
   const thought = await db.getThought({ username: req.params?.username, id: req.params?.thoughtID, and: true })
   const otherUser = await db.getUser({ username: req.params?.username })
-
-  // Check if thought exists
-  if (!thought) {
-    return res.status(404).json({ error: "Thought not found" })
-  }
 
   // Check if user passes friendsOnly check
   if (!(req.username == req.params?.username) && thought.friendsOnly && !otherUser.friends.includes(req.username)) {
@@ -102,20 +104,21 @@ async function updateThought(req, res) {
 
     return res.status(200).json({ success: "Thought updated successfully" })
   } else {
-    return res.status(404).json({ error: "Thought not found" })
+    return res.status(500).json({ error: "An error occurred while updating thought" })
   }
 
 }
 
 async function deleteThought(req, res) {
   if (!(await db.deleteThought(req.params?.username, req.params?.thoughtID))) {
-    return res.status(404).json({ error: "Thought not found" })
+    return res.status(500).json({ error: "An error occurred while deleting thought" })
   } else {
     return res.status(200).json({ success: "Thought deleted" })
   }
 }
 
 module.exports = {
+  reqThoughtIsBySelf,
   getThoughts,
   getThoughtByID,
   createThought,

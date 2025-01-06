@@ -13,8 +13,8 @@ async function reqUserExists(req, res, next) {
 }
 
 // Within a request context, check if requested thought or forum ID exists
-async function reqThoughtOrForumIDExists(req, res, next) {
-  req.reqThought = await db.getThought({ id: req.params?.thoughtOrForumID })
+async function reqThoughtOrForumPostIDExists(req, res, next) {
+  req.reqThought = await db.getThought({ id: (req.params?.thoughtOrForumID || req.params?.thoughtID || req.params?.forumPostID) })
   req.reqForumPost = null
   // let forumPost = ...
   if (!(req.reqThought || req.reqForumPost)) {
@@ -33,6 +33,6 @@ function reqUserNotSelf(req, res, next) {
 
 module.exports = {
   reqUserExists,
-  reqThoughtOrForumIDExists,
+  reqThoughtOrForumPostIDExists,
   reqUserNotSelf,
 }
