@@ -21,7 +21,7 @@ def test_create_thought():
         "title": "my very first thought",
         "html": "<h1>a person who thinks all the time has nothing to think but thoughts</h1><img src=a onerror=alert(1)>",
         "css": "h1{color:blue}",
-        "friendsOnly": True,
+        "friendsOnly": False,
         }, cookies=cookies)
     res = r.json()
     print(res)
@@ -34,7 +34,7 @@ def test_create_thought():
 
 def test_get_thoughts():
 
-    url = "http://localhost:5000/api/thought/user"
+    url = "http://localhost:5000/api/thought/list/user"
 
     # Expected: Successful thoughts get
     printc("Testing: Successful thoughts get", Fore.YELLOW)
@@ -49,7 +49,7 @@ def test_get_thoughts():
 
 def test_get_thought():
 
-    url = "http://localhost:5000/api/thought/user/" + thoughtID
+    url = "http://localhost:5000/api/thought/" + thoughtID
 
     # Expected: Successful thought get
     printc("Testing: Successful thought get", Fore.YELLOW)

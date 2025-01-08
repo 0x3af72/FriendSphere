@@ -70,8 +70,8 @@ app.post("/api/profile/html", auth.authenticate, profile.updateHTML)
 app.post("/api/profile/css", auth.authenticate, profile.updateCSS)
 
 // Thought routes
-app.get("/api/thought/:username", auth.authenticate, util.reqUserExists, thought.getThoughts)
-app.get("/api/thought/:username/:thoughtID", auth.authenticate, util.reqUserExists, util.reqThoughtOrForumPostIDExists, thought.getThoughtByID)
+app.get("/api/thought/:thoughtID", auth.authenticate, util.reqThoughtOrForumPostIDExists, thought.getThought)
+app.get("/api/thought/list/:username", auth.authenticate, util.reqUserExists, thought.getThoughts)
 app.post("/api/thought/create", auth.authenticate, thought.createThought)
 app.post("/api/thought/update/:thoughtID", auth.authenticate, util.reqThoughtOrForumPostIDExists, thought.reqThoughtIsBySelf, thought.updateThought)
 app.post("/api/thought/delete/:thoughtID", auth.authenticate, util.reqThoughtOrForumPostIDExists, thought.reqThoughtIsBySelf, thought.deleteThought)
@@ -90,8 +90,9 @@ app.get("/api/update/list", auth.authenticate, update.getUpdates)
 app.get("/api/update/:updateID", auth.authenticate, update.getUpdateByID)
 
 // Comment routes
+app.get("/api/comment/:commentID", auth.authenticate, comment.reqCommentExists, comment.getComment)
 app.get("/api/comment/list/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumPostIDExists, comment.getComments)
 app.post("/api/comment/create/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumPostIDExists, comment.createComment)
-app.post("/api/comment/delete/:commentID", auth.authenticate, comment.deleteComment)
+app.post("/api/comment/delete/:commentID", auth.authenticate, comment.reqCommentExists, comment.deleteComment)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })

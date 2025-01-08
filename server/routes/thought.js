@@ -11,32 +11,21 @@ async function reqThoughtIsBySelf(req, res, next) {
   next()
 }
 
-async function getThoughts(req, res) {
-  const thoughts = await db.getThoughts(req.params?.username)
-  const otherUser = await db.getUser({ username: req.params?.username })
-  const thoughtsJson = thoughts
-    .filter(thought => !thought.friendsOnly || otherUser.friends.includes(req.username)) // friendsOnly check
-    .map(thought => ({
-      id: thought.id,
-      title: thought.title,
-    }))
-  return res.status(200).json(thoughtsJson)
-}
+// TODO: iconsistency in checking if thought exists
+async function getThought(req, res) {
 
-async function getThoughtByID(req, res) {
-
-  const thought = await db.getThought({ username: req.params?.username, id: req.params?.thoughtID, and: true })
-  const otherUser = await db.getUser({ username: req.params?.username })
+  let thought = req.reqThought
+  let otherUser = req.reqUser
 
   // Check if user passes friendsOnly check
-  if (!(req.username == req.params?.username) && thought.friendsOnly && !otherUser.friends.includes(req.username)) {
+  if (!(req.username == req.reqUser.username) && thought.friendsOnly && !otherUser.friends.includes(req.username)) {
     return res.status(404).json({ error: "Thought not found" })
   }
 
   // Read HTML and CSS
   let html, css
   try {
-    const thoughtData = path.join("data", req.params?.username, "thought", req.params?.thoughtID)
+    const thoughtData = path.join("data", req.reqUser.username, "thought", req.params?.thoughtID)
     html = (await fs.promises.readFile(path.join(thoughtData, "index.html"))).toString()
     css = (await fs.promises.readFile(path.join(thoughtData, "style.css"))).toString()
   } catch (error) {
@@ -45,6 +34,19 @@ async function getThoughtByID(req, res) {
   }
 
   return res.status(200).json({ id: thought.id, title: thought.title, html: html, css: css })
+}
+
+async function getThoughts(req, res) {
+  const thoughts = await db.getThoughts(req.params?.username)
+  let otherUser = req.reqUser
+  const hasPerms = otherUser.friends.includes(req.username) || otherUser.username == req.username
+  const thoughtsJson = thoughts
+    .filter(thought => thought.friendsOnly ? hasPerms : true) // friendsOnly check
+    .map(thought => ({
+      id: thought.id,
+      title: thought.title,
+    }))
+  return res.status(200).json(thoughtsJson)
 }
 
 function validateThoughtFields(req, res) {
@@ -110,7 +112,7 @@ async function updateThought(req, res) {
 }
 
 async function deleteThought(req, res) {
-  if (!(await db.deleteThought(req.params?.username, req.params?.thoughtID))) {
+  if (!(await db.deleteThought(req.reqUser.username, req.params?.thoughtID))) {
     return res.status(500).json({ error: "An error occurred while deleting thought" })
   } else {
     return res.status(200).json({ success: "Thought deleted" })
@@ -119,8 +121,8 @@ async function deleteThought(req, res) {
 
 module.exports = {
   reqThoughtIsBySelf,
+  getThought,
   getThoughts,
-  getThoughtByID,
   createThought,
   updateThought,
   deleteThought,

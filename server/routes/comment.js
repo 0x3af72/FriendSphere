@@ -1,5 +1,18 @@
 const db = require('./db')
 
+// Within a request context, check if requested user exists
+async function reqCommentExists(req, res, next) {
+  req.reqComment = await db.getComment(req.params?.commentID)
+  if (!req.reqComment) {
+    return res.status(404).json({ error: "Comment does not exist" })
+  }
+  next()
+}
+
+async function getComment(req, res) {
+  return req.reqComment // TODO: format it
+}
+
 async function getComments(req, res) {
 
   // Friends only check
@@ -25,6 +38,8 @@ function deleteComment(req, res) {
 }
 
 module.exports = {
+  reqCommentExists,
+  getComment,
   getComments,
   createComment,
   deleteComment,
