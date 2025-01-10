@@ -320,7 +320,7 @@ async function createComment(username, thoughtID, forumPostID, body) {
       body
     })
     await newComment.save()
-    return true
+    return id
 
   } catch (error) {
     console.error("Error create comment:", error)

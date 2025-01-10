@@ -93,6 +93,6 @@ app.get("/api/update/:updateID", auth.authenticate, update.getUpdateByID)
 app.get("/api/comment/:commentID", auth.authenticate, comment.reqCommentExists, comment.getComment)
 app.get("/api/comment/list/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumPostIDExists, comment.getComments)
 app.post("/api/comment/create/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumPostIDExists, comment.createComment)
-app.post("/api/comment/delete/:commentID", auth.authenticate, comment.reqCommentExists, comment.deleteComment)
+app.post("/api/comment/delete/:commentID", auth.authenticate, comment.reqCommentExists, comment.reqCommentIsBySelf, comment.deleteComment)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })

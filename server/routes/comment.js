@@ -6,11 +6,39 @@ async function reqCommentExists(req, res, next) {
   if (!req.reqComment) {
     return res.status(404).json({ error: "Comment does not exist" })
   }
+  req.reqThought = req.reqComment.thoughtID && (await db.getThought({ id: req.reqComment.thoughtID }))
+  req.reqForumPost = req.reqComment.forumPostID && undefined // TODO
+  req.reqUser == (
+    (req.reqThought && await db.getUser({ username: req.reqThought.username })) || 
+    (req.reqForumPost && await db.getUser({ username: req.reqForumPost.username }))
+  )
+  next()
+}
+
+function reqCommentIsBySelf(req, res, next) {
+  if (req.reqComment.username != req.username) {
+    return res.status(401).json({ error: "You are not authorized to perform this action" })
+  }
   next()
 }
 
 async function getComment(req, res) {
-  return req.reqComment // TODO: format it
+
+  // friendsOnly check
+  if (req.reqThought && !(req.username == req.reqThought.username) && !(req.reqUser.friends.contains(req.username))) {
+    return res.status(404).json({ error: "Comment not found" })
+  }
+  if (req.reqForumPost && !(req.username == req.reqForumPost.username) && !(req.reqUser.friends.contains(req.username))) {
+    return res.status(404).json({ error: "Comment not found" })
+  }
+
+  return res.status(200).json({
+    username: req.reqComment.username,
+    id: req.reqComment.id,
+    thoughtID: req.reqThought?.id,
+    forumPostID: req.reqForumPost?.id,
+    body: req.reqComment.body,
+  })
 }
 
 async function getComments(req, res) {
@@ -29,16 +57,29 @@ async function getComments(req, res) {
   return await db.getComments({ thoughtID: req.reqThought?.id, forumPostID: req.reqForumPost?.id })
 }
 
-function createComment(req, res) {
+async function createComment(req, res) {
   
+  // Fields check
+  if (!(req.body?.body.length <= 1000)) {
+    return res.status(400).json({ error: "Comment body cannot exceed 1000 characters" })
+  }
+
+  // Create
+  let id = await db.createComment(req.username, req.reqThought.id, req.reqForumPost.id, req.body?.body)
+  return res.status(200).json({ id: id })
 }
 
-function deleteComment(req, res) {
-
+async function deleteComment(req, res) {
+  if (!(await db.deleteComment(req.reqUser.username, req.params?.commentID))) {
+    return res.status(500).json({ error: "An error occurred while deleting comment" })
+  } else {
+    return res.status(200).json({ success: "Comment deleted" })
+  }
 }
 
 module.exports = {
   reqCommentExists,
+  reqCommentIsBySelf,
   getComment,
   getComments,
   createComment,

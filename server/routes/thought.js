@@ -33,7 +33,13 @@ async function getThought(req, res) {
     return res.status(500).json({ error: "An error occurred while reading thought files" })
   }
 
-  return res.status(200).json({ id: thought.id, title: thought.title, html: html, css: css })
+  return res.status(200).json({
+    username: thought.username,
+    id: thought.id,
+    title: thought.title,
+    html: html,
+    css: css
+  })
 }
 
 async function getThoughts(req, res) {

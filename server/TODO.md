@@ -11,7 +11,9 @@
 4. TEST friend.js [ok]
 
 5. Comments (these can be on forums, or on thoughts)
+ - test comments
 
 6. Replies (these are on comments)
+
 
 7. Forum (these can attach files)
