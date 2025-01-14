@@ -14,6 +14,15 @@
  - test comments
 
 6. Replies (these are on comments)
+ - test replies
 
+7. Homepage generation
+ - show thoughts
+  - from friends
+  - from friends of friends (which are not friendsonly)
 
-7. Forum (these can attach files)
+8. Forum
+
+9. Homepage generation
+ - show forum posts
+  - from categories the user is interested in?

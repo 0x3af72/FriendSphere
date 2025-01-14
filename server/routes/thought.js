@@ -2,7 +2,6 @@ const path = require('path')
 const fs = require('fs')
 
 const db = require('./db')
-const util = require('../util')
 
 async function reqThoughtIsBySelf(req, res, next) {
   if (req.reqThought.username != req.username) {
@@ -11,7 +10,6 @@ async function reqThoughtIsBySelf(req, res, next) {
   next()
 }
 
-// TODO: iconsistency in checking if thought exists
 async function getThought(req, res) {
 
   let thought = req.reqThought

@@ -13,6 +13,7 @@ const forum = require('./routes/forum')
 const update = require('./routes/update')
 const friend = require('./routes/friend')
 const comment = require('./routes/comment')
+const homepage = require('./routes/homepage')
 const util = require('./util')
 
 // Setup app
@@ -77,7 +78,12 @@ app.post("/api/thought/update/:thoughtID", auth.authenticate, util.reqThoughtOrF
 app.post("/api/thought/delete/:thoughtID", auth.authenticate, util.reqThoughtOrForumPostIDExists, thought.reqThoughtIsBySelf, thought.deleteThought)
 
 // Forum routes
-// TODO
+app.get("/api/forum/:forumPostID", auth.authenticate, util.reqThoughtOrForumPostIDExists, forum.getForumPost)
+app.get("/api/forum/list/:username", auth.authenticate, util.reqUserExists, forum.getForumPosts)
+app.get("/api/forum/search/:searchTerm", auth.authenticate, thought.searchForumPost)
+app.post("/api/forum/create", auth.authenticate, forum.createForumPost)
+app.post("/api/forum/update/:forumPostID", auth.authenticate, util.reqThoughtOrForumPostIDExists, forum.reqForumPostIsBySelf, forum.updateForumPost)
+app.post("/api/forum/delete/:forumPostID", auth.authenticate, util.reqThoughtOrForumPostIDExists, forum.reqForumPostIsBySelf, forum.deleteForumPost)
 
 // Friend routes
 app.get("/api/friend/list/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.reqUserIsFriendOrSelf, friend.getFriends)
@@ -94,5 +100,8 @@ app.get("/api/comment/:commentID", auth.authenticate, comment.reqCommentExists, 
 app.get("/api/comment/list/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumPostIDExists, comment.getComments)
 app.post("/api/comment/create/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumPostIDExists, comment.createComment)
 app.post("/api/comment/delete/:commentID", auth.authenticate, comment.reqCommentExists, comment.reqCommentIsBySelf, comment.deleteComment)
+
+// Homepage routes
+app.get("/api/homepage", auth.authenticate, homepage.generateHomepage)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })

@@ -147,12 +147,9 @@ const thoughtSchema = new mongoose.Schema({
 })
 const Thought = mongoose.model("Thought", thoughtSchema)
 
-// Get thought by username or id
-async function getThought({ username, id, and }) {
-  if (and) return await Thought.findOne({ username: username, id: id })
-  return await Thought.findOne({
-    $or: [{ username: username }, { id: id }],
-  })
+// Get thought by id
+async function getThought({ id }) {
+  return await Thought.findOne({ id })
 }
 
 // Get thoughts by username
@@ -217,6 +214,22 @@ async function deleteThought(username, id) {
     return false
   }
 }
+
+// ======================== FORUM ========================
+
+// Forum post collection
+const forumPostSchema = new mongoose.Schema({
+  username: { type: String, required: true, index: true },
+  id: { type: String, required: true, unique: true, index: true },
+  title: { type: String, required: true },
+  category: { type: String, required: true, index: true },
+})
+const ForumPost = mongoose.model("Forum", forumPostSchema)
+
+// Get forum post by id
+
+// Get forum posts by username, category, search term
+
 
 // =========================== UPDATES ===========================
 
@@ -290,6 +303,7 @@ const commentSchema = new mongoose.Schema({
   thoughtID: { type: String, required: false, index: true }, // Either
   forumPostID: { type: String, required: false, index: true }, // Or
   body: { type: String, required: true },
+  replyToCommentID: { type: String, required: false } // For replies
 })
 const Comment = mongoose.model("Comment", commentSchema)
 
@@ -338,16 +352,6 @@ async function deleteComment(id) {
     return false
   }
 }
-
-// =========================== REPLIES ===========================
-
-// Reply collection
-const replySchema = new mongoose.Schema({
-  username: { type: String, required: true, index: true },
-  commentID: { type: String, required: true, index: true },
-  body: { type: String, required: true },
-})
-const Reply = mongoose.model("Reply", replySchema)
 
 // ======================================================
 

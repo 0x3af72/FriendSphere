@@ -58,6 +58,15 @@ async function getComments(req, res) {
 }
 
 async function createComment(req, res) {
+
+  // Check whether comment is a reply
+  let replyToCommentID = req.body?.replyToCommentID
+  if (replyToCommentID) {
+    let replyToComment = await db.getComment(replyToCommentID)
+    if (!(replyToComment?.thoughtID == req.reqThought.id || replyToComment?.forumPostID == req.reqForumPost.id)) {
+      return res.status(404).json({ error: "Target comment for reply not found" })
+    }
+  }
   
   // Fields check
   if (!(req.body?.body.length <= 1000)) {
