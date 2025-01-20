@@ -4,7 +4,7 @@ const fs = require('fs')
 const db = require('./db')
 
 async function reqThoughtIsBySelf(req, res, next) {
-  if (req.reqThought.username != req.username) {
+  if (req.reqThought.username != req.user.username) {
     return res.status(401).json({ error: "You are not authorized to perform this action" })
   }
   next()
@@ -16,7 +16,7 @@ async function getThought(req, res) {
   let otherUser = req.reqUser
 
   // Check if user passes friendsOnly check
-  if (!(req.username == req.reqUser.username) && thought.friendsOnly && !otherUser.friends.includes(req.username)) {
+  if (!(req.user.username == req.reqUser.username) && thought.friendsOnly && !otherUser.friends.includes(req.user.username)) {
     return res.status(404).json({ error: "Thought not found" })
   }
 
@@ -43,7 +43,7 @@ async function getThought(req, res) {
 async function getThoughts(req, res) {
   const thoughts = await db.getThoughts(req.params?.username)
   let otherUser = req.reqUser
-  const hasPerms = otherUser.friends.includes(req.username) || otherUser.username == req.username
+  const hasPerms = otherUser.friends.includes(req.user.username) || otherUser.username == req.user.username
   const thoughtsJson = thoughts
     .filter(thought => thought.friendsOnly ? hasPerms : true) // friendsOnly check
     .map(thought => ({
@@ -86,7 +86,7 @@ async function createThought(req, res) {
   if (validateRes) return validateRes
 
   // Create thought
-  const id = await db.createThought(req.username, req.body?.friendsOnly, req.body?.title, req.body?.html, req.body?.css)
+  const id = await db.createThought(req.user.username, req.body?.friendsOnly, req.body?.title, req.body?.html, req.body?.css)
   if (id) {
     return res.status(200).json({ id: id })
   } else {
@@ -101,10 +101,10 @@ async function updateThought(req, res) {
   if (validateRes) return validateRes
 
   // Update thought
-  if (await db.updateThought(req.username, req.params?.thoughtID, req.body?.title, req.body?.friendsOnly)) {
+  if (await db.updateThought(req.user.username, req.params?.thoughtID, req.body?.title, req.body?.friendsOnly)) {
 
     // Write HTML and CSS
-    const thoughtData = path.join("data", req.username, "thought", req.params?.thoughtID)
+    const thoughtData = path.join("data", req.user.username, "thought", req.params?.thoughtID)
     await fs.promises.writeFile(path.join(thoughtData, "index.html"), req.body?.html)
     await fs.promises.writeFile(path.join(thoughtData, "style.css"), req.body?.css)
 

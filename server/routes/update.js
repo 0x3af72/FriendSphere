@@ -1,7 +1,7 @@
 const db = require('./db')
 
 async function getUpdates(req, res) {
-    const updates = db.getUpdates(req.username)
+    const updates = db.getUpdates(req.user.username)
     const updatesJson = updates.map(update => ({
         id: update.id,
         title: update.title,
@@ -11,7 +11,7 @@ async function getUpdates(req, res) {
 }
 
 async function getUpdateByID(req, res) {
-    const update = db.getUpdate(req.username, req.params?.updateID)
+    const update = db.getUpdate(req.user.username, req.params?.updateID)
     if (!update) {
         return res.status(404).json({ error: "Update not found" })
     } else {

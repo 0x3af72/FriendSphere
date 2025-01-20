@@ -144,6 +144,7 @@ const thoughtSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true, index: true },
   title: { type: String, required: true },
   friendsOnly: { type: Boolean, required: true },
+  createdAt: { type: Date, default: Date.now, required: true },
 })
 const Thought = mongoose.model("Thought", thoughtSchema)
 
@@ -223,6 +224,7 @@ const forumPostSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true, index: true },
   title: { type: String, required: true },
   category: { type: String, required: true, index: true },
+  createdAt: { type: Date, default: Date.now, required: true },
 })
 const ForumPost = mongoose.model("Forum", forumPostSchema)
 
@@ -241,7 +243,7 @@ const updateSchema = new mongoose.Schema({
   body: { type: String, required: true },
   action: { type: String, required: false },
   actionData: { type: Object, required: false },
-  createdAt: { type: Date, required: true, default: Date.now },
+  createdAt: { type: Date, default: Date.now, required: true },
 })
 const Update = mongoose.model("Update", updateSchema)
 
@@ -303,7 +305,8 @@ const commentSchema = new mongoose.Schema({
   thoughtID: { type: String, required: false, index: true }, // Either
   forumPostID: { type: String, required: false, index: true }, // Or
   body: { type: String, required: true },
-  replyToCommentID: { type: String, required: false } // For replies
+  replyToCommentID: { type: String, required: false }, // For replies
+  createdAt: { type: Date, default: Date.now, required: true },
 })
 const Comment = mongoose.model("Comment", commentSchema)
 

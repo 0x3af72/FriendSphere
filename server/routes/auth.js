@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 const db = require('./db')
 
-function authenticate(req, res, next) {
+async function authenticate(req, res, next) {
 
   // Get token
   const token = req.cookies?.token
@@ -11,11 +11,11 @@ function authenticate(req, res, next) {
   }
 
   // Verify token
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {
       return res.status(401).json({ error: "Unauthorized" })
     }
-    req.username = decoded.username
+    req.user = await db.getUser({ username: decoded.username })
     next()
   })
 }

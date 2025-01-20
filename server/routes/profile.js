@@ -47,7 +47,7 @@ async function updateProfile(req, res) {
     return res.status(400).json({ error: "Missing required fields" })
   }
 
-  if (await db.updateProfile(req.username, req.body?.bio, req.body?.hobbies, req.body?.music)) {
+  if (await db.updateProfile(req.user.username, req.body?.bio, req.body?.hobbies, req.body?.music)) {
     return res.status(200).json({ success: "Profile updated successfully" })
   } else {
     return res.status(500).json({ error: "Error updating profile" })
@@ -64,7 +64,7 @@ async function updatePfp(req, res) {
   // Convert to PNG, write to file
   try {
     const imageBuffer = await sharp(req.file.buffer).png().toBuffer()
-    await fs.promises.writeFile(path.join("data", req.username, "profile/pfp.png"), imageBuffer)
+    await fs.promises.writeFile(path.join("data", req.user.username, "profile/pfp.png"), imageBuffer)
     return res.status(200).json({ success: "Profile picture updated successfully" })
   } catch (error) {
     console.error("Error updating profile picture:", error)
@@ -81,7 +81,7 @@ async function updateHTML(req, res) {
 
   // Write to file
   try {
-    await fs.promises.writeFile(path.join("data", req.username, "profile/index.html"), req.body?.html)
+    await fs.promises.writeFile(path.join("data", req.user.username, "profile/index.html"), req.body?.html)
     return res.status(200).json({ success: "HTML updated successfully" })
   } catch (error) {
     console.error("Error updating HTML:", error)
@@ -98,7 +98,7 @@ async function updateCSS(req, res) {
 
   // Write to file
   try {
-    await fs.promises.writeFile(path.join("data", req.username, "profile/style.css"), req.body?.css)
+    await fs.promises.writeFile(path.join("data", req.user.username, "profile/style.css"), req.body?.css)
     return res.status(200).json({ success: "CSS updated successfully" })
   } catch (error) {
     console.error("Error updating CSS:", error)

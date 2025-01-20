@@ -16,7 +16,7 @@ async function reqCommentExists(req, res, next) {
 }
 
 function reqCommentIsBySelf(req, res, next) {
-  if (req.reqComment.username != req.username) {
+  if (req.reqComment.username != req.user.username) {
     return res.status(401).json({ error: "You are not authorized to perform this action" })
   }
   next()
@@ -25,10 +25,10 @@ function reqCommentIsBySelf(req, res, next) {
 async function getComment(req, res) {
 
   // friendsOnly check
-  if (req.reqThought && !(req.username == req.reqThought.username) && !(req.reqUser.friends.contains(req.username))) {
+  if (req.reqThought && !(req.user.username == req.reqThought.username) && !(req.reqUser.friends.contains(req.user.username))) {
     return res.status(404).json({ error: "Comment not found" })
   }
-  if (req.reqForumPost && !(req.username == req.reqForumPost.username) && !(req.reqUser.friends.contains(req.username))) {
+  if (req.reqForumPost && !(req.user.username == req.reqForumPost.username) && !(req.reqUser.friends.contains(req.user.username))) {
     return res.status(404).json({ error: "Comment not found" })
   }
 
@@ -44,12 +44,9 @@ async function getComment(req, res) {
 async function getComments(req, res) {
 
   // Friends only check
-  const otherUser = (
-    await db.getUser({ username: req.reqThought?.username }) ||
-    await db.findUser({ username: req.reqForumPost?.username }))
   if (
-    (req.reqThought?.friendsOnly && !otherUser.friends.contains(req.username)) ||
-    (req.reqForumPost?.friendsOnly && !otherUser.friends.contains(req.username))
+    (req.reqThought?.friendsOnly && !req.user.friends.contains(req.reqThought?.username)) ||
+    (req.reqForumPost?.friendsOnly && !req.user.friends.contains(req.reqForumPost?.username))
   ) {
     return res.status(401).json({ error: "You are not this user's friend" })
   }
@@ -74,7 +71,7 @@ async function createComment(req, res) {
   }
 
   // Create
-  let id = await db.createComment(req.username, req.reqThought.id, req.reqForumPost.id, req.body?.body)
+  let id = await db.createComment(req.user.username, req.reqThought.id, req.reqForumPost.id, req.body?.body)
   return res.status(200).json({ id: id })
 }
 

@@ -27,7 +27,7 @@ async function reqThoughtOrForumPostIDExists(req, res, next) {
 
 // Ensure requested user is not yourself
 function reqUserNotSelf(req, res, next) {
-  if (req.username == req.params?.username) {
+  if (req.user.username == req.params?.username) {
     return res.status(401).json({ error: "You cannot perform this action on yourself!" })
   }
   next()

@@ -4,10 +4,11 @@ const fs = require('fs')
 const db = require('./db')
 
 // Load config
-const forumCategories = await fs.promises.readFile("../config/forum_categories.json")
+let forumCategories
+(async () => {forumCategories = await fs.promises.readFile("config/forum_categories.json")})()
 
 async function reqForumPostIsBySelf(req, res, next) {
-  if (req.reqForumPost.username != req.username) {
+  if (req.reqForumPost.username != req.user.username) {
     return res.status(401).json({ error: "You are not authorized to perform this action" })
   }
   next()
