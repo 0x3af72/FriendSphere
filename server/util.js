@@ -15,8 +15,7 @@ async function reqUserExists(req, res, next) {
 // Within a request context, check if requested thought or forum ID exists
 async function reqThoughtOrForumPostIDExists(req, res, next) {
   req.reqThought = await db.getThought({ id: (req.params?.thoughtOrForumID || req.params?.thoughtID || req.params?.forumPostID) })
-  req.reqForumPost = null
-  // let forumPost = ...
+  req.reqForumPost = await db.getForumPost({ id: (req.params?.thoughtOrForumID || req.params?.thoughtID || req.params?.forumPostID) })
   if (req.reqThought || req.reqForumPost) {
     req.reqUser = await db.getUser({ username: (req.reqThought || req.reqForumPost).username })
   } else {

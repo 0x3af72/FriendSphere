@@ -15,7 +15,7 @@ async function reqForumPostIsBySelf(req, res, next) {
 }
 
 function getForumPost(req, res) {
-
+  
 }
 
 function getForumPosts(req, res) {

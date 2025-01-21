@@ -229,9 +229,20 @@ const forumPostSchema = new mongoose.Schema({
 const ForumPost = mongoose.model("Forum", forumPostSchema)
 
 // Get forum post by id
+async function getForumPost(id) {
+  return await ForumPost.findOne({ id })
+}
 
 // Get forum posts by username, category, search term
-
+async function getForumPosts(username, category, searchTerm) {
+  return await ForumPost.find({
+    $or: [
+      { username: username },
+      { category: category },
+      { title: { $regex: searchTerm, $options: "i" } },
+    ]
+  })
+}
 
 // =========================== UPDATES ===========================
 
@@ -370,6 +381,8 @@ module.exports = {
   createThought,
   updateThought,
   deleteThought,
+  getForumPost,
+  getForumPosts,
   getUpdate,
   getUpdates,
   createUpdate,

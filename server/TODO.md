@@ -16,7 +16,7 @@
 6. Replies (these are on comments)
  - test replies
 
-7. Homepage generation
+7. Homepage generation [ok]
  - show thoughts
   - from friends
   - from friends of friends (which are not friendsonly)
@@ -26,3 +26,8 @@
 9. Homepage generation
  - show forum posts
   - from categories the user is interested in?
+
+10. How to attach media to thoughts?
+ - i want to do this for forum posts too
+ - route to get? and then automatically insert the thoughtID into the DOM so that it works?
+ - then we need a place to add files
