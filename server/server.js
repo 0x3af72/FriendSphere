@@ -102,6 +102,6 @@ app.post("/api/comment/create/:thoughtOrForumID", auth.authenticate, util.reqTho
 app.post("/api/comment/delete/:commentID", auth.authenticate, comment.reqCommentExists, comment.reqCommentIsBySelf, comment.deleteComment)
 
 // Homepage routes
-app.get("/api/homepage", auth.authenticate, homepage.generateHomepage)
+app.get("/api/homepage/:numThoughts", auth.authenticate, homepage.generateHomepage)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })

@@ -93,3 +93,4 @@ test_list_friend()
 test_remove_friend()
 test_decline_friend()
 test_list_friend() # supposed to fail
+test_add_friend()
