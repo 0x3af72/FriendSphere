@@ -19,7 +19,7 @@ async function reqThoughtOrForumPostIDExists(req, res, next) {
   if (req.reqThought || req.reqForumPost) {
     req.reqUser = await db.getUser({ username: (req.reqThought || req.reqForumPost).username })
   } else {
-    return res.status(404).json({ error: "Thought or forum ID does not exist" })
+    return res.status(404).json({ error: "Thought or forum post does not exist" })
   }
   next()
 }

@@ -24,11 +24,8 @@ function reqCommentIsBySelf(req, res, next) {
 
 async function getComment(req, res) {
 
-  // friendsOnly check
+  // friendsOnly check (thought only)
   if (req.reqThought && !(req.user.username == req.reqThought.username) && !(req.reqUser.friends.contains(req.user.username))) {
-    return res.status(404).json({ error: "Comment not found" })
-  }
-  if (req.reqForumPost && !(req.user.username == req.reqForumPost.username) && !(req.reqUser.friends.contains(req.user.username))) {
     return res.status(404).json({ error: "Comment not found" })
   }
 
@@ -43,11 +40,8 @@ async function getComment(req, res) {
 
 async function getComments(req, res) {
 
-  // Friends only check
-  if (
-    (req.reqThought?.friendsOnly && !req.user.friends.contains(req.reqThought?.username)) ||
-    (req.reqForumPost?.friendsOnly && !req.user.friends.contains(req.reqForumPost?.username))
-  ) {
+  // friendsOnly check (thought only)
+  if (req.reqThought?.friendsOnly && !req.user.friends.contains(req.reqThought?.username)) {
     return res.status(401).json({ error: "You are not this user's friend" })
   }
 

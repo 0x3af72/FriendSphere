@@ -208,6 +208,12 @@ async function updateThought(username, id, title, friendsOnly) {
 async function deleteThought(username, id) {
   try {
     const thought = await getThought({ username, id })
+
+    // Delete media associated with this thought
+    for (const id of (await getMedias({ id }))) {
+      await deleteMedia(id)
+    }
+
     await thought.deleteOne()
     return true
   } catch (error) {
@@ -351,7 +357,7 @@ async function createComment(username, thoughtID, forumPostID, body) {
     return id
 
   } catch (error) {
-    console.error("Error create comment:", error)
+    console.error("Error creating comment:", error)
     return false
   }
 }
@@ -363,6 +369,68 @@ async function deleteComment(id) {
     return true
   } catch (error) {
     console.error("Error deleting comment:", error)
+    return false
+  }
+}
+
+// ======================== MEDIA ========================
+const mediaSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  id: { type: String, required: true, index: true },
+  filename: { type: String, required: true },
+  thoughtID: { type: String, required: false, index: true }, // Either
+  forumPostID: { type: String, required: false, index: true }, // Or
+})
+const Media = mongoose.model("Media", mediaSchema)
+
+async function getMedia(id) {
+  return await Media.findOne({ id })
+}
+
+async function getMedias(thoughtID, forumPostID) {
+  return await Media.find({
+    $or: [{ thoughtID: thoughtID }, { forumPostID: forumPostID }],
+  })
+}
+
+async function createMedia(username, filename, thoughtID, forumPostID, data) {
+  try {
+
+    // Generate id for media
+    let id;
+    while (await getMedia(id) || !id) {
+      id = uuidv4();
+    }
+
+    // Write data
+    const mediaData = path.join("data", username, "media");
+    await fs.promises.mkdir(mediaData, { recursive: true })
+    await fs.promises.copyFile(path.join(mediaData, id), data)
+
+    const newMedia = new Media({
+      username,
+      id,
+      filename,
+      thoughtID,
+      forumPostID,
+    })
+    await newMedia.save()
+    return id
+
+  } catch (error) {
+    console.error("Error creating media:", error)
+    return false
+  }
+}
+
+async function deleteMedia(id) {
+  try {
+    const media = await getMedia({ id })
+    await fs.promises.unlink(path.join("data", media.username, "media", id))
+    await media.deleteOne()
+    return true
+  } catch (error) {
+    console.error("Error deleting media:", error)
     return false
   }
 }
@@ -391,4 +459,7 @@ module.exports = {
   getComments,
   createComment,
   deleteComment,
+  getMedia,
+  createMedia,
+  deleteMedia,
 }

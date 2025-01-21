@@ -14,6 +14,7 @@ const update = require('./routes/update')
 const friend = require('./routes/friend')
 const comment = require('./routes/comment')
 const homepage = require('./routes/homepage')
+const media = reqiure('./routes/media')
 const util = require('./util')
 
 // Setup app
@@ -103,5 +104,9 @@ app.post("/api/comment/delete/:commentID", auth.authenticate, comment.reqComment
 
 // Homepage routes
 app.get("/api/homepage/:numThoughts", auth.authenticate, homepage.generateHomepage)
+
+// Media routes
+app.get("/api/media/:mediaID", auth.authenticate, media.getMedia)
+app.post("/api/media/upload", auth.authenticate, upload.array("files", 100), media.uploadMedia)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })
