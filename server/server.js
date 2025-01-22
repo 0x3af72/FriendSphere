@@ -81,7 +81,7 @@ app.post("/api/thought/delete/:thoughtID", auth.authenticate, util.reqThoughtOrF
 // Forum routes
 app.get("/api/forum/:forumPostID", auth.authenticate, util.reqThoughtOrForumPostIDExists, forum.getForumPost)
 app.get("/api/forum/list/:username", auth.authenticate, util.reqUserExists, forum.getForumPosts)
-app.get("/api/forum/search/:searchTerm", auth.authenticate, forum.searchForumPost)
+app.get("/api/forum/search", auth.authenticate, forum.searchForumPost) // ?category=x&searchTerm=y
 app.post("/api/forum/create", auth.authenticate, forum.createForumPost)
 app.post("/api/forum/update/:forumPostID", auth.authenticate, util.reqThoughtOrForumPostIDExists, forum.reqForumPostIsBySelf, forum.updateForumPost)
 app.post("/api/forum/delete/:forumPostID", auth.authenticate, util.reqThoughtOrForumPostIDExists, forum.reqForumPostIsBySelf, forum.deleteForumPost)

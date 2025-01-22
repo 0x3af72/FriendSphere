@@ -101,7 +101,7 @@ async function updateThought(req, res) {
   if (validateRes) return validateRes
 
   // Update thought
-  if (await db.updateThought(req.user.username, req.params?.thoughtID, req.body?.title, req.body?.friendsOnly)) {
+  if (await db.updateThought(req.params?.thoughtID, req.body?.title, req.body?.friendsOnly)) {
 
     // Write HTML and CSS
     const thoughtData = path.join("data", req.user.username, "thought", req.params?.thoughtID)
@@ -116,7 +116,7 @@ async function updateThought(req, res) {
 }
 
 async function deleteThought(req, res) {
-  if (!(await db.deleteThought(req.reqUser.username, req.params?.thoughtID))) {
+  if (!(await db.deleteThought(req.params?.thoughtID))) {
     return res.status(500).json({ error: "An error occurred while deleting thought" })
   } else {
     return res.status(200).json({ success: "Thought deleted" })

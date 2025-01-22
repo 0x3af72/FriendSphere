@@ -10,10 +10,10 @@
 
 4. TEST friend.js [ok]
 
-5. Comments (these can be on forums, or on thoughts)
+5. Comments (these can be on forums, or on thoughts) [ok]
  - test comments
 
-6. Replies (these are on comments)
+6. Replies (these are on comments) [ok]
  - test replies
 
 7. Homepage generation [ok]

@@ -149,7 +149,7 @@ const thoughtSchema = new mongoose.Schema({
 const Thought = mongoose.model("Thought", thoughtSchema)
 
 // Get thought by id
-async function getThought({ id }) {
+async function getThought(id) {
   return await Thought.findOne({ id })
 }
 
@@ -164,7 +164,7 @@ async function createThought(username, friendsOnly, title, html, css) {
 
     // Generate id for thought
     let id;
-    while (await getThought({ id }) || !id) {
+    while (await getThought(id) || !id) {
       id = uuidv4();
     }
 
@@ -191,9 +191,9 @@ async function createThought(username, friendsOnly, title, html, css) {
 }
 
 // Update thought
-async function updateThought(username, id, title, friendsOnly) {
+async function updateThought(id, title, friendsOnly) {
   try {
-    const thought = await getThought({ username, id })
+    const thought = await getThought(id)
     thought.title = title
     thought.friendsOnly = friendsOnly
     await thought.save()
@@ -205,12 +205,12 @@ async function updateThought(username, id, title, friendsOnly) {
 }
 
 // Delete thought
-async function deleteThought(username, id) {
+async function deleteThought(id) {
   try {
-    const thought = await getThought({ username, id })
+    const thought = await getThought(id)
 
     // Delete media associated with this thought
-    for (const id of (await getMedias({ id }))) {
+    for (const id of (await getMedias({ thoughtID: id }))) {
       await deleteMedia(id)
     }
 
@@ -240,14 +240,78 @@ async function getForumPost(id) {
 }
 
 // Get forum posts by username, category, search term
-async function getForumPosts(username, category, searchTerm) {
+async function getForumPosts({ username, category, searchTerm }) {
   return await ForumPost.find({
     $or: [
       { username: username },
-      { category: category },
-      { title: { $regex: searchTerm, $options: "i" } },
+      { $and: [
+        category ? { category: category } : {},
+        title ? { title: { $regex: searchTerm, $options: "i" } } : {},
+        ]
+      },
     ]
   })
+}
+
+async function createForumPost(username, title, category, html, css) {
+  try {
+
+    // Generate id for thought
+    let id;
+    while (await getForumPost(id) || !id) {
+      id = uuidv4();
+    }
+
+    // Write to files
+    const forumPostData = path.join("data", username, "forum_post", id)
+    await fs.promises.mkdir(forumPostData, { recursive: true })
+    await fs.promises.writeFile(path.join(forumPostData, "index.html"), html)
+    await fs.promises.writeFile(path.join(forumPostData, "style.css"), css)
+
+    // Update database
+    const newForumPost = new ForumPost({
+      username: username,
+      id: id,
+      title: title,
+      category: category,
+    })
+    await newForumPost.save()
+    return id
+
+  } catch (error) {
+    console.error("Error creating forum post:", error)
+    return false
+  }
+}
+
+async function updateForumPost(id, title, category) {
+  try {
+    const forumPost = await getForumPost(id)
+    forumPost.title = title
+    forumPost.category = category
+    await forumPost.save()
+    return true
+  } catch (error) {
+    console.error("Error updating forum post:", error)
+    return false
+  }
+}
+
+async function deleteForumPost(id) {
+  try {
+    const forumPost = await getForumPost(id)
+
+    // Delete media associated with this thought
+    for (const id of (await getMedias({ forumPostID: id }))) {
+      await deleteMedia(id)
+    }
+
+    await forumPost.deleteOne()
+    return true
+  } catch (error) {
+    console.error("Error deleting forum post:", error)
+    return false
+  }
 }
 
 // =========================== UPDATES ===========================
@@ -387,7 +451,7 @@ async function getMedia(id) {
   return await Media.findOne({ id })
 }
 
-async function getMedias(thoughtID, forumPostID) {
+async function getMedias({ thoughtID, forumPostID }) {
   return await Media.find({
     $or: [{ thoughtID: thoughtID }, { forumPostID: forumPostID }],
   })
@@ -451,6 +515,9 @@ module.exports = {
   deleteThought,
   getForumPost,
   getForumPosts,
+  createForumPost,
+  updateForumPost,
+  deleteForumPost,
   getUpdate,
   getUpdates,
   createUpdate,
