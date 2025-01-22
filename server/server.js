@@ -14,7 +14,7 @@ const update = require('./routes/update')
 const friend = require('./routes/friend')
 const comment = require('./routes/comment')
 const homepage = require('./routes/homepage')
-const media = reqiure('./routes/media')
+const media = require('./routes/media')
 const util = require('./util')
 
 // Setup app
