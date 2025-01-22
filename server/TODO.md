@@ -11,19 +11,17 @@
 4. TEST friend.js [ok]
 
 5. Comments (these can be on forums, or on thoughts) [ok]
- - test comments
 
 6. Replies (these are on comments) [ok]
- - test replies
 
 7. Homepage generation [ok]
  - show thoughts
   - from friends
   - from friends of friends (which are not friendsonly)
 
-8. Forum
+8. Forum [ok]
 
-9. Homepage generation
+9. Homepage generation [ok]
  - show forum posts
   - from categories the user is interested in?
 
@@ -33,4 +31,13 @@
  - then we need a place to add files
  - remember to add deletion functionality on thought or forumpost deletion
  - "src" replacement will be done on client side %something.jpg% -> link
- - TEST IT
+
+11. TEST COMMENTS
+
+12. TEST REPLIES
+
+13. TEST MEDIA
+
+14. TEST FORUM
+
+15. FRONTEND TIME!
