@@ -52,12 +52,12 @@ app.use(
   })
 )
 
-// Sanity
+// SANITY
 app.get("/api", auth.authenticate, (req, res) => {
   return res.status(200).json({ message: `You are logged in as ${req.user.username}` })
 })
 
-// Auth routes (public)
+// Auth routes
 app.post("/api/register", auth.register)
 app.post("/api/login", auth.login)
 
