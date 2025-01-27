@@ -49,6 +49,7 @@ async function addFriend(req, res) {
       otherUser.friends.push(req.user.username)
       await req.user.save()
       await otherUser.save()
+      await update.deleteOne()
 
       return res.status(200).json({ success: "Friend request accepted" })
     }

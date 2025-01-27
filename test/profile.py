@@ -38,7 +38,7 @@ def update_css(css):
 def get_profile(username):
     url = f"http://localhost:5000/api/profile/{username}"
     r = requests.get(url, cookies=cookies)
-    return r, r.content
+    return r, r.json()
 
 def get_pfp(username):
     url = f"http://localhost:5000/api/profile/{username}/pfp"
@@ -117,7 +117,49 @@ def test_update_profile():
     )
 
 def test_get_profile():
-    pass
+    
+    def to_test():
+        r, json = get_profile("profiletest")
+        if "error" in json: return False, json
+        if r.status_code != 200: return False, json
+        return True, json
+    test(
+        describe="successful profile get",
+        it="should return the user profile",
+        func=to_test,
+    )
+
+    def to_test():
+        r, content = get_pfp("profiletest")
+        if r.status_code != 200: return False, content
+        return True, {}
+    test(
+        describe="successful pfp get",
+        it="should return an image",
+        func=to_test,
+    )
+
+    def to_test():
+        r, content = get_html("profiletest")
+        if r.status_code != 200: return False, content
+        if content != b"<h1>hello world</h1>": return False, content
+        return True, content
+    test(
+        describe="successful html get",
+        it="should return the html",
+        func=to_test,
+    )
+
+    def to_test():
+        r, content = get_css("profiletest")
+        if r.status_code != 200: return False, content
+        if content != b"body{color:red}": return False, content
+        return True, content
+    test(
+        describe="successful css get",
+        it="should return the css",
+        func=to_test,
+    )
 
 if __name__ == "__main__":
     test_update_profile()

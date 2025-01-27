@@ -1,96 +1,137 @@
-from colorama import Fore, init
+from util import test, reset_db
+import auth
 import requests
 
-init()
+reset_db()
 
-def printc(text, color):
-    print(f"{color}{text}{Fore.RESET}")
-
+_, json = auth.register("friendtest", "friendtest@gmail.com", "password123")
 cookies = {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJpYXQiOjE3MzMzMDE3Mzl9.kGcH4Kw6_AAbPPMsBTeg7CB2BIIS8O6wsINY6rvwl5M"
+    "token": json["token"],
 }
+
+_, json = auth.register("friendtest2", "friendtest2@gmail.com", "password123")
 cookies2 = {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwiaWF0IjoxNzM0MjY4MDI5fQ.GGdrJxYZ8eow5KL0clGmNO8glY7USyQL2U10F0gC00I"
+    "token": json["token"],
 }
 
-def test_add_friend():
-
-    url = "http://localhost:5000/api/friend/add/user2"
-
-    # Expected: Successful friend request
-    printc("Testing: Successful friend request", Fore.YELLOW)
-
-    r = requests.post(url, cookies=cookies)
-    res = r.json()
-    print(res)
-    if "success" in res:
-        printc("SUCCESS", Fore.GREEN)
-    else:
-        printc("FAILED", Fore.RED)
-
-    # Expected: Successful friend accept
-    printc("Testing: Successful friend accept", Fore.YELLOW)
-
-    url = "http://localhost:5000/api/friend/add/user"
-    r = requests.post(url, cookies=cookies2)
-    res = r.json()
-    print(res)
-    if "success" in res:
-        printc("SUCCESS", Fore.GREEN)
-    else:
-        printc("FAILED", Fore.RED)
-
-def test_list_friend():
-    
-    url = "http://localhost:5000/api/friend/list/user2"
-
-    # Expected: Successful friend list
-    printc("Testing: Successful friend list", Fore.YELLOW)
-
+def list_friends(username, cookies):
+    url = "http://localhost:5000/api/friend/list/" + username
     r = requests.get(url, cookies=cookies)
-    res = r.json()
-    print(res)
-    if "error" in res:
-        printc("FAILED", Fore.RED)
-    else:
-        printc("SUCCESS", Fore.GREEN)
+    return r, r.json()
 
-def test_remove_friend():
-
-    url = "http://localhost:5000/api/friend/remove/user2"
-
-    # Expected: Successful friend remove
-    printc("Testing: Successful friend remove", Fore.YELLOW)
-
+def add_friend(username, cookies):
+    url = "http://localhost:5000/api/friend/add/" + username
     r = requests.post(url, cookies=cookies)
-    res = r.json()
-    print(res)
-    if "success" in res:
-        printc("SUCCESS", Fore.GREEN)
-    else:
-        printc("FAILED", Fore.RED)
+    return r, r.json()
 
-def test_decline_friend():
-
-    url = "http://localhost:5000/api/friend/add/user2"
+def decline_friend(username, cookies):
+    url = "http://localhost:5000/api/friend/decline/" + username
     r = requests.post(url, cookies=cookies)
+    return r, r.json()
 
-    url = "http://localhost:5000/api/friend/decline/user"
+def remove_friend(username, cookies):
+    url = "http://localhost:5000/api/friend/remove/" + username
+    r = requests.post(url, cookies=cookies)
+    return r, r.json()
 
-    # Expected: Successful friend decline
-    printc("Testing: Successful friend decline", Fore.YELLOW)
+def test_all():
+    
+    def to_test():
+      r, json = list_friends("friendtest2", cookies)
+      if "error" in json: return True, json
+      return False, json
+    test(
+        describe="unsuccessful friends list",
+        it="should say that you are not this user's friend",
+        func=to_test,
+    )
 
-    r = requests.post(url, cookies=cookies2)
-    res = r.json()
-    print(res)
-    if "success" in res:
-        printc("SUCCESS", Fore.GREEN)
-    else:
-        printc("FAILED", Fore.RED)
+    def to_test():
+      r, json = add_friend("friendtest2", cookies)
+      if "error" in json: return False, json
+      if r.status_code != 200: return False, json
+      return True, json
+    test(
+        describe="successful friend add",
+        it="should return success",
+        func=to_test,
+    )
 
-test_add_friend()
-test_list_friend()
-test_remove_friend()
-test_decline_friend()
-test_list_friend() # supposed to fail
-test_add_friend()
+    def to_test():
+      r, json = decline_friend("friendtest", cookies2)
+      if "error" in json: return False, json
+      if r.status_code != 200: return False, json
+      return True, json
+    test(
+        describe="successful friend decline",
+        it="should return success",
+        func=to_test,
+    )
+
+    def to_test():
+      r, json = decline_friend("friendtest", cookies2)
+      if "error" in json: return True, json
+      return False, json
+    test(
+        describe="unsuccessful friend decline",
+        it="should fail and say no friend request exists",
+        func=to_test,
+    )
+
+    def to_test():
+      r, json = add_friend("friendtest2", cookies)
+      if "error" in json: return False, json
+      if r.status_code != 200: return False, json
+      return True, json
+    test(
+        describe="successful friend add",
+        it="should return success",
+        func=to_test,
+    )
+
+    def to_test():
+      r, json = add_friend("friendtest", cookies2)
+      if "error" in json: return False, json
+      if r.status_code != 200: return False, json
+      return True, json
+    test(
+        describe="successful friend add",
+        it="should return success",
+        func=to_test,
+    )
+
+    def to_test():
+      r, json = list_friends("friendtest2", cookies2)
+      if "error" in json: return False, json
+      if r.status_code != 200: return False, json
+      return True, json
+    test(
+        describe="successful friends list",
+        it="should list your own friends",
+        func=to_test,
+    )
+
+    def to_test():
+      r, json = list_friends("friendtest2", cookies)
+      if "error" in json: return False, json
+      if r.status_code != 200: return False, json
+      return True, json
+    test(
+        describe="successful friends list",
+        it="should list their friend's friends",
+        func=to_test,
+    )
+
+    def to_test():
+      r, json = remove_friend("friendtest2", cookies)
+      if "error" in json: return False, json
+      if r.status_code != 200: return False, json
+      return True, json
+    test(
+        describe="successful friend remove",
+        it="should successfully remove friend",
+        func=to_test,
+    )
+
+if __name__ == "__main__":
+    test_all()

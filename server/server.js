@@ -87,7 +87,7 @@ app.post("/api/forum/update/:forumPostID", auth.authenticate, util.reqThoughtOrF
 app.post("/api/forum/delete/:forumPostID", auth.authenticate, util.reqThoughtOrForumPostIDExists, forum.reqForumPostIsBySelf, forum.deleteForumPost)
 
 // Friend routes
-app.get("/api/friend/list/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.reqUserIsFriendOrSelf, friend.getFriends)
+app.get("/api/friend/list/:username", auth.authenticate, util.reqUserExists, friend.reqUserIsFriendOrSelf, friend.getFriends)
 app.post("/api/friend/add/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.reqUserNotFriend, friend.addFriend)
 app.post("/api/friend/decline/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.declineFriend)
 app.post("/api/friend/remove/:username", auth.authenticate, util.reqUserExists, util.reqUserNotSelf, friend.reqUserIsFriend, friend.removeFriend)
