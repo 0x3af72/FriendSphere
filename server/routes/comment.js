@@ -8,7 +8,7 @@ async function reqCommentExists(req, res, next) {
   }
   req.reqThought = req.reqComment.thoughtID && (await db.getThought(req.reqComment.thoughtID))
   req.reqForumPost = req.reqComment.forumPostID && undefined // TODO
-  req.reqUser == (
+  req.reqUser = (
     (req.reqThought && await db.getUser({ username: req.reqThought.username })) || 
     (req.reqForumPost && await db.getUser({ username: req.reqForumPost.username }))
   )
@@ -30,36 +30,31 @@ function friendsOnlyCheck(req, res) {
 }
 
 async function getComment(req, res) {
-  let res = friendsOnlyCheck(req, res)
-  if (res) return res
+  let friendsOnlyCheckRes = friendsOnlyCheck(req, res)
+  if (friendsOnlyCheckRes) return friendsOnlyCheckRes
   return res.status(200).json(req.reqComment)
 }
 
 async function getComments(req, res) {
 
-  let res = friendsOnlyCheck(req, res)
-  if (res) return res
+  let friendsOnlyCheckRes = friendsOnlyCheck(req, res)
+  if (friendsOnlyCheckRes) return friendsOnlyCheckRes
 
   let comments = await db.getComments({ thoughtID: req.reqThought?.id, forumPostID: req.reqForumPost?.id })
   return res.status(200).json(comments)
 }
 
 async function getReplies(req, res) {
-  let res = friendsOnlyCheck(req, res)
-  if (res) return res
+  let friendsOnlyCheckRes = friendsOnlyCheck(req, res)
+  if (friendsOnlyCheckRes) return friendsOnlyCheckRes
   let replies = await db.getComments({ replyToCommentID: req.body?.commentID })
   return res.status(200).json(replies)
 }
 
 async function createComment(req, res) {
 
-  let res = friendsOnlyCheck(req, res)
-  if (res) return res
-
-  // friendsOnly check (thought only)
-  if (req.reqThought?.friendsOnly && !(req.user.username == req.reqUser.username) && !(req.reqUser.friends.includes(req.user.username))) {
-    return res.status(401).json({ error: "You are not this user's friend" })
-  }
+  let friendsOnlyCheckRes = friendsOnlyCheck(req, res)
+  if (friendsOnlyCheckRes) return friendsOnlyCheckRes
 
   // Check whether comment is a reply
   let replyToCommentID = req.body?.replyToCommentID
@@ -81,7 +76,7 @@ async function createComment(req, res) {
 }
 
 async function deleteComment(req, res) {
-  if (!(await db.deleteComment(req.reqUser.username, req.params?.commentID))) {
+  if (!(await db.deleteComment(req.params?.commentID))) {
     return res.status(500).json({ error: "An error occurred while deleting comment" })
   } else {
     return res.status(200).json({ success: "Comment deleted" })
