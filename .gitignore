@@ -43,3 +43,6 @@ next-env.d.ts
 
 # data files
 server/data
+
+# pycache
+**/__pycache__
