@@ -32,9 +32,9 @@
  - remember to add deletion functionality on thought or forumpost deletion
  - "src" replacement will be done on client side %something.jpg% -> link
 
-11. TEST COMMENTS
+11. TEST COMMENTS [ok]
 
-12. TEST REPLIES
+12. TEST REPLIES [ok]
 
 13. TEST MEDIA
 
