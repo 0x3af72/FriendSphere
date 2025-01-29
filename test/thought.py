@@ -10,6 +10,16 @@ cookies = {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJpYXQiOjE3MzMzMDE3Mzl9.kGcH4Kw6_AAbPPMsBTeg7CB2BIIS8O6wsINY6rvwl5M"
 }
 
+def create_thought(friends_only, cookies):
+    url = "http://localhost:5000/api/thought/create"
+    r = requests.post(url, json={
+        "title": "sample thought",
+        "html": "<h1>a person who thinks all the time has nothing to think but thoughts</h1><img src=a onerror=alert(1)>",
+        "css": "h1{color:blue}",
+        "friendsOnly": friends_only,
+    }, cookies=cookies)
+    return r, r.json()
+
 def test_create_thought():
 
     url = "http://localhost:5000/api/thought/create"
@@ -82,7 +92,8 @@ def test_update_thought():
     else:
         printc("FAILED", Fore.RED)
 
-test_create_thought()
-test_get_thoughts()
-test_get_thought()
-test_update_thought()
+if __name__ == "__main__":
+    test_create_thought()
+    test_get_thoughts()
+    test_get_thought()
+    test_update_thought()

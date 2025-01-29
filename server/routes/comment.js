@@ -22,28 +22,44 @@ function reqCommentIsBySelf(req, res, next) {
   next()
 }
 
-async function getComment(req, res) {
-
-  // friendsOnly check (thought only)
-  if (req.reqThought?.friendsOnly && !(req.user.username == req.reqThought.username) && !(req.reqUser.friends.includes(req.user.username))) {
+// friendsOnly check (thought only)
+function friendsOnlyCheck(req, res) {
+  if (req.reqThought?.friendsOnly && !(req.user.username == req.reqUser.username) && !(req.reqUser.friends.includes(req.user.username))) {
     return res.status(404).json({ error: "Comment not found" })
   }
+}
 
+async function getComment(req, res) {
+  let res = friendsOnlyCheck(req, res)
+  if (res) return res
   return res.status(200).json(req.reqComment)
 }
 
 async function getComments(req, res) {
 
-  // friendsOnly check (thought only)
-  if (req.reqThought?.friendsOnly && !(req.user.username == req.reqUser.username) && !req.user.friends.includes(req.reqUser.username)) {
-    return res.status(401).json({ error: "You are not this user's friend" })
-  }
+  let res = friendsOnlyCheck(req, res)
+  if (res) return res
 
   let comments = await db.getComments({ thoughtID: req.reqThought?.id, forumPostID: req.reqForumPost?.id })
   return res.status(200).json(comments)
 }
 
+async function getReplies(req, res) {
+  let res = friendsOnlyCheck(req, res)
+  if (res) return res
+  let replies = await db.getComments({ replyToCommentID: req.body?.commentID })
+  return res.status(200).json(replies)
+}
+
 async function createComment(req, res) {
+
+  let res = friendsOnlyCheck(req, res)
+  if (res) return res
+
+  // friendsOnly check (thought only)
+  if (req.reqThought?.friendsOnly && !(req.user.username == req.reqUser.username) && !(req.reqUser.friends.includes(req.user.username))) {
+    return res.status(401).json({ error: "You are not this user's friend" })
+  }
 
   // Check whether comment is a reply
   let replyToCommentID = req.body?.replyToCommentID
@@ -60,7 +76,7 @@ async function createComment(req, res) {
   }
 
   // Create
-  let id = await db.createComment(req.user.username, req.reqThought?.id, req.reqForumPost?.id, req.body?.body)
+  let id = await db.createComment(req.user.username, req.reqThought?.id, req.reqForumPost?.id, req.body?.body, replyToCommentID)
   return res.status(200).json({ id: id })
 }
 
@@ -76,6 +92,7 @@ module.exports = {
   reqCommentExists,
   reqCommentIsBySelf,
   getComment,
+  getReplies,
   getComments,
   createComment,
   deleteComment,

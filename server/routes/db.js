@@ -395,13 +395,13 @@ async function getComment(id) {
   return await Comment.findOne({ id })
 }
 
-async function getComments({ username, thoughtID, forumPostID }) {
+async function getComments({ username, thoughtID, forumPostID, replyToCommentID }) {
   return await Comment.find({
-    $or: [{ username: username }, { thoughtID: thoughtID }, { forumPostID: forumPostID }],
+    $or: [{ username: username }, { thoughtID: thoughtID }, { forumPostID: forumPostID }, { replyToCommentID: replyToCommentID }],
   })
 }
 
-async function createComment(username, thoughtID, forumPostID, body) {
+async function createComment(username, thoughtID, forumPostID, body, replyToCommentID) {
   try {
 
     // Generate id for comment
@@ -415,7 +415,8 @@ async function createComment(username, thoughtID, forumPostID, body) {
       id,
       thoughtID,
       forumPostID,
-      body
+      body,
+      replyToCommentID,
     })
     await newComment.save()
     return id

@@ -1,67 +1,77 @@
-from colorama import Fore, init
+from util import test, reset_db
+import auth
+import thought
+import forum
 import requests
 
-init()
+reset_db()
 
-def printc(text, color):
-    print(f"{color}{text}{Fore.RESET}")
-
+_, json = auth.register("commenttest", "commenttest@gmail.com", "password123")
 cookies = {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJpYXQiOjE3MzMzMDE3Mzl9.kGcH4Kw6_AAbPPMsBTeg7CB2BIIS8O6wsINY6rvwl5M"
+    "token": json["token"],
 }
 
-def test_create_comment():
+_, json = auth.register("commenttest2", "commenttest2@gmail.com", "password123")
+cookies2 = {
+    "token": json["token"],
+}
 
-    url = "http://localhost:5000/api/comment/create/cef8030f-aca4-41c4-92a4-390f68ba8d22"
+_, json = thought.create_thought(False, cookies2)
+thought_id = json["id"]
 
-    # Expected: Successful comment create
-    printc("Testing: Successful comment create", Fore.YELLOW)
+_, json = thought.create_thought(True, cookies2)
+friends_only_thought_id = json["id"]
 
+_, json = forum.create_forum_post(cookies2)
+forum_post_id = json["id"]
+
+def create_comment(thought_or_forum_id, cookies):
+    url = "http://localhost:5000/api/comment/create/" + thought_or_forum_id
     r = requests.post(url, json={
-        "body": "test comment",
-        }, cookies=cookies)
-    res = r.json()
-    
-    print(res)
-    global commentID
-    if "id" in res:
-        commentID = res["id"]
-        printc("SUCCESS", Fore.GREEN)
-    else:
-        printc("FAILED", Fore.RED)
+        "body": "hello world",
+    }, cookies=cookies)
+    return r, r.json()
 
-def test_list_comment():
+def create_reply(thought_or_forum_id, cookies):
+    url = "http://localhost:5000/api/comment/create/" + thought_or_forum_id
+    r = requests.post(url, json={
+        "body": "hello world",
+    }, cookies=cookies)
+    return r, r.json()
 
-    url = "http://localhost:5000/api/comment/list/cef8030f-aca4-41c4-92a4-390f68ba8d22"
+def delete_comment(comment_id, cookies):
+    url = "http://localhost:5000/api/comment/delete/" + comment_id
+    r = requests.post(url, cookies=cookies)
+    return r, r.json()
 
-    # Expected: Successful comment list
-    printc("Testing: Successful comment list", Fore.YELLOW)
-
+def get_comment(comment_id, cookies):
+    url = "http://localhost:5000/api/comment/" + comment_id
     r = requests.get(url, cookies=cookies)
-    res = r.json()
-    
-    print(res)
-    if "error" in res:
-        printc("FAILED", Fore.RED)
-    else:
-        printc("SUCCESS", Fore.GREEN)
+    return r, r.json()
 
-def test_get_comment():
-
-    url = "http://localhost:5000/api/comment/" + commentID
-
-    # Expected: Successful comment get
-    printc("Testing: Successful comment get", Fore.YELLOW)
-
+def get_comments(thought_or_forum_id, cookies):
+    url = "http://localhost:5000/api/list/" + thought_or_forum_id
     r = requests.get(url, cookies=cookies)
-    res = r.json()
-    
-    print(res)
-    if "error" in res:
-        printc("FAILED", Fore.RED)
-    else:
-        printc("SUCCESS", Fore.GREEN)
+    return r, r.json()
 
-test_create_comment()
-test_list_comment()
-test_get_comment()
+def get_replies(comment_id, cookies):
+    url = "http://localhost:5000/api/list/replies/" + comment_id
+    r = requests.get(url, cookies=cookies)
+    return r, r.json()
+
+def test_all():
+
+    def to_test():
+        r, json = create_comment("this is my bio!", ["soccer", "swimming"], ["panic! at the disco", "green day"])
+        if "error" in json: return False, json
+        if not "success" in json: return False, json
+        if r.status_code != 200: return False, json
+        return True, json
+    test(
+        describe="successful profile update",
+        it="should return success",
+        func=to_test,
+    )
+
+if __name__ == "__main__":
+    test_all()

@@ -1,1 +1,19 @@
-# first, reset the db
+import auth
+
+auth.test_register()
+auth.test_login()
+
+import profile
+
+profile.test_update_profile()
+profile.test_get_profile()
+
+import friend
+
+friend.test_all()
+
+import comment
+
+import media
+
+import forum
