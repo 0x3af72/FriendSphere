@@ -1,6 +1,3 @@
-const DOMPurify = require('dompurify')
-const { JSDOM } = require('jsdom')
-
 const db = require('./routes/db')
 
 // Within a request context, check if requested user exists

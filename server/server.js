@@ -108,6 +108,6 @@ app.get("/api/homepage/:numThoughts", auth.authenticate, homepage.generateHomepa
 
 // Media routes
 app.get("/api/media/:mediaID", auth.authenticate, media.getMedia)
-app.post("/api/media/upload", auth.authenticate, upload.array("files", 100), media.uploadMedia)
+app.post("/api/media/upload/:thoughtOrForumID", auth.authenticate, util.reqThoughtOrForumPostIDExists, upload.array("files", 100), media.uploadMedia)
 
 app.listen(5000, () => { console.log("Server started on port 5000") })

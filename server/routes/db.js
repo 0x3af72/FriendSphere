@@ -473,7 +473,7 @@ async function createMedia(username, filename, thoughtID, forumPostID, data) {
     // Write data
     const mediaData = path.join("data", username, "media");
     await fs.promises.mkdir(mediaData, { recursive: true })
-    await fs.promises.copyFile(path.join(mediaData, id), data)
+    await fs.promises.writeFile(path.join(mediaData, id), data)
 
     const newMedia = new Media({
       username,
