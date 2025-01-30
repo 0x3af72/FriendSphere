@@ -47,7 +47,7 @@ async function getComments(req, res) {
 async function getReplies(req, res) {
   let friendsOnlyCheckRes = friendsOnlyCheck(req, res)
   if (friendsOnlyCheckRes) return friendsOnlyCheckRes
-  let replies = await db.getComments({ replyToCommentID: req.body?.commentID })
+  let replies = await db.getComments({ replyToCommentID: req.params?.commentID })
   return res.status(200).json(replies)
 }
 
@@ -57,7 +57,7 @@ async function createComment(req, res) {
   if (friendsOnlyCheckRes) return friendsOnlyCheckRes
 
   // Check whether comment is a reply
-  let replyToCommentID = req.body?.replyToCommentID
+  let replyToCommentID = req.query?.replyToCommentID
   if (replyToCommentID) {
     let replyToComment = await db.getComment(replyToCommentID)
     if (!(replyToComment?.thoughtID == req.reqThought.id || replyToComment?.forumPostID == req.reqForumPost.id)) {

@@ -14,6 +14,8 @@ friend.test_all()
 
 import comment
 
+comment.test_all()
+
 import media
 
 import forum

@@ -34,10 +34,10 @@ def create_comment(thought_or_forum_id, cookies):
     return r, r.json()
 
 def create_reply(thought_or_forum_id, comment_id, cookies):
-    url = "http://localhost:5000/api/comment/create/" + thought_or_forum_id
+    url = "http://localhost:5000/api/comment/create/" + thought_or_forum_id + "/?replyToCommentID=" + comment_id
     r = requests.post(url, json={
-        "body": "hello world",
-    }, params={"replyToCommentID": comment_id}, cookies=cookies)
+        "body": "this is a reply",
+    }, cookies=cookies)
     return r, r.json()
 
 def delete_comment(comment_id, cookies):

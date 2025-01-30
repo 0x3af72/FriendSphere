@@ -360,7 +360,7 @@ async function createUpdate(username, title, body, action=undefined, actionData=
     return true
 
   } catch (error) {
-    console.log("Error creating update:", error)
+    console.error("Error creating update:", error)
     return false
   }
 }
@@ -383,10 +383,10 @@ async function deleteUpdate(username, id) {
 const commentSchema = new mongoose.Schema({
   username: { type: String, required: true, index: true },
   id: { type: String, required: true, index: true },
-  thoughtID: { type: String, required: false, index: true }, // Either
-  forumPostID: { type: String, required: false, index: true }, // Or
+  thoughtID: { type: String, required: true, default: "invalid", index: true }, // Either
+  forumPostID: { type: String, required: true, default: "invalid", index: true }, // Or
   body: { type: String, required: true },
-  replyToCommentID: { type: String, required: false }, // For replies
+  replyToCommentID: { type: String, required: true, default: "invalid" }, // For replies
   createdAt: { type: Date, default: Date.now, required: true },
 })
 const Comment = mongoose.model("Comment", commentSchema)
@@ -396,6 +396,9 @@ async function getComment(id) {
 }
 
 async function getComments({ username, thoughtID, forumPostID, replyToCommentID }) {
+  console.log({
+    $or: [{ username: username }, { thoughtID: thoughtID }, { forumPostID: forumPostID }, { replyToCommentID: replyToCommentID }],
+  })
   return await Comment.find({
     $or: [{ username: username }, { thoughtID: thoughtID }, { forumPostID: forumPostID }, { replyToCommentID: replyToCommentID }],
   })
@@ -443,8 +446,8 @@ const mediaSchema = new mongoose.Schema({
   username: { type: String, required: true },
   id: { type: String, required: true, index: true },
   filename: { type: String, required: true },
-  thoughtID: { type: String, required: false, index: true }, // Either
-  forumPostID: { type: String, required: false, index: true }, // Or
+  thoughtID: { type: String, required: true, default: "invalid", index: true }, // Either
+  forumPostID: { type: String, required: true, default: "invalid", index: true }, // Or
 })
 const Media = mongoose.model("Media", mediaSchema)
 
