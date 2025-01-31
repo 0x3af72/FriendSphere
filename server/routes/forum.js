@@ -50,7 +50,7 @@ async function getForumPosts(req, res) {
 
 async function searchForumPost(req, res) {
   let forumPosts = await db.getForumPosts({
-    category: req.query?.category,
+    category: req.params?.category,
     searchTerm: req.query?.searchTerm,
   })
   const forumPostsJson = forumPosts

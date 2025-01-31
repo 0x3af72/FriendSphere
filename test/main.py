@@ -18,4 +18,8 @@ comment.test_all()
 
 import media
 
+media.test_all()
+
 import forum
+
+forum.test_all()

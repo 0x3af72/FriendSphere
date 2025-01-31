@@ -210,8 +210,8 @@ async function deleteThought(id) {
     const thought = await getThought(id)
 
     // Delete media associated with this thought
-    for (const id of (await getMedias({ thoughtID: id }))) {
-      await deleteMedia(id)
+    for (const mediaID of (await getMedias({ thoughtID: id }))) {
+      await deleteMedia(mediaID)
     }
 
     await thought.deleteOne()
@@ -240,7 +240,7 @@ async function getForumPost(id) {
 }
 
 // Get forum posts by username, category, search term
-async function getForumPosts({ username, category, searchTerm }) {
+async function getForumPosts({ username, category, searchTerm, title }) {
   return await ForumPost.find({
     $or: [
       { username: username },
@@ -302,8 +302,8 @@ async function deleteForumPost(id) {
     const forumPost = await getForumPost(id)
 
     // Delete media associated with this thought
-    for (const id of (await getMedias({ forumPostID: id }))) {
-      await deleteMedia(id)
+    for (const mediaID of (await getMedias({ forumPostID: id }))) {
+      await deleteMedia(mediaID)
     }
 
     await forumPost.deleteOne()
